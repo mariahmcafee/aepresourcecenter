@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEP 2027 Resource Hub — IMN & Spark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#131F5B;
+    --blue-tint:#DEE4EE;
+    --blue-tint-50:#EFF1F7;
+    --blue-tint-25:#F7F8FB;
+    --sand:#ECE9E4;
+    --sand-50:#F5F4F1;
+    --sand-25:#FAF9F8;
+    --red:#D4414F;
+    --sage:#979A74;
+    --sage-tint:#E0E1D6;
+    --ink:#000;
+    --grey:#76767F;
+    --faint:#A0A0A8;
+    --line:#E4E2DD;
+    --radius:8px;
+    --radius-sm:5px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;
+    color:var(--ink);background:#fff;line-height:1.15;-webkit-font-smoothing:antialiased;
+  }
+  /* Only H1 is serif (Lora), light. H2 and smaller use the sans (Inter), weight for hierarchy. */
+  h1,.lora{font-family:'Lora',Georgia,'Times New Roman',serif;letter-spacing:-0.02em;line-height:1.05;font-weight:400}
+  h2,h3{font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;line-height:1.15;letter-spacing:-0.005em}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:24px;padding:14px 40px;
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand .imn{height:24px;width:auto;display:block}
+  .brand-sep{width:1px;height:20px;background:var(--line);flex:0 0 auto}
+  .powered{font-size:12px;font-weight:500;color:var(--grey);white-space:nowrap;display:flex;align-items:center;gap:5px}
+  .powered .star-red{color:var(--red);font-size:11px}
+  .topbar-right{display:flex;align-items:center;gap:24px}
+  .topbar-search{position:relative;display:flex;align-items:center}
+  .topbar-search svg{position:absolute;left:12px;color:var(--faint)}
+  .topbar-search input{
+    font-family:inherit;font-size:13px;color:var(--ink);width:230px;
+    padding:9px 12px 9px 36px;border:1px solid var(--line);border-radius:var(--radius-sm);
+    background:var(--sand-25);outline:none;transition:border-color .15s ease,width .2s ease;
+  }
+  .topbar-search input::placeholder{color:var(--faint)}
+  .topbar-search input:focus{border-color:var(--blue);width:260px}
+  .topnav{display:flex;gap:24px;font-size:14px;font-weight:500;color:var(--grey)}
+  .topnav a:hover{color:var(--ink)}
+
+  /* ---------- hero ---------- */
+  .hero{max-width:1180px;margin:0 auto;padding:56px 40px 30px;display:grid;grid-template-columns:1.45fr 1fr;gap:48px;align-items:center}
+  .hero h1{font-size:58px;font-weight:400}
+  .hero h1 .dim{color:var(--grey)}
+  .hero p{font-size:15px;color:var(--grey);margin-top:16px;max-width:32em;line-height:1.45}
+  .hero-btns{display:flex;gap:12px;margin-top:26px}
+  .btn{font-size:13px;font-weight:600;padding:11px 18px;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;border:1px solid var(--blue)}
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-ghost{background:#fff;color:var(--blue)}
+  .countdown{background:var(--blue);border-radius:var(--radius);color:#fff;padding:30px 32px}
+  .countdown .label{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue-tint);font-weight:500}
+  .cd-row{display:flex;gap:26px;margin-top:24px}
+  .cd-unit{display:flex;flex-direction:column;align-items:flex-start}
+  .cd-num{font-family:'Lora',serif;font-size:38px;line-height:1;font-weight:400}
+  .cd-tag{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue-tint);margin-top:9px}
+  .cd-foot{margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.18)}
+  .cd-foot .k{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue-tint)}
+  .cd-foot .v{font-size:13px;font-weight:500;margin-top:3px}
+
+  /* ---------- sticky stage nav — Spark-style arrow chips ---------- */
+  .stagebar{position:sticky;top:var(--topbar-h,55px);z-index:40;background:#fff;border-bottom:1px solid var(--line)}
+  .stagebar-inner{max-width:1180px;margin:0 auto;padding:14px 40px}
+  .tabs{display:flex;gap:7px;position:relative;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{
+    display:flex;align-items:center;gap:9px;flex:0 0 auto;
+    font-size:16px;font-weight:500;color:var(--ink);background:var(--blue-tint-50);
+    border:1px solid transparent;border-radius:99px;cursor:pointer;
+    padding:7px 7px 7px 16px;font-family:inherit;white-space:nowrap;transition:background .18s ease,border-color .18s ease;
+  }
+  .tab:hover{background:var(--blue-tint);border-color:transparent}
+  .tab .ct{display:none}  /* counts hidden in chip style — keep the chip clean */
+  .tab .arrow{
+    flex:0 0 auto;width:30px;height:30px;border-radius:99px;background:#fff;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--ink);
+    transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease;
+  }
+  .tab .arrow svg{width:15px;height:15px;transition:transform .18s ease}
+  .tab:hover .arrow{background:var(--blue);border-color:var(--blue);color:#fff}
+  .tab:hover .arrow svg{transform:translateX(2px)}
+  .tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
+  .tab.active .arrow{background:#fff;border-color:#fff;color:var(--blue)}
+
+  /* ---------- sections (accordion) ---------- */
+  main{max-width:1180px;margin:0 auto;padding:8px 40px 80px}
+  .section{border-top:1px solid var(--line);padding:6px 0}
+  .section:first-child{border-top:none}
+  .sec-head{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:24px;
+    padding:32px 0 4px;cursor:pointer;user-select:none;width:100%;text-align:left;background:none;border:none;font-family:inherit;
+  }
+  .sec-num{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--faint);font-weight:600;margin-bottom:8px}
+  .sec-head h2{font-size:30px;font-weight:400;letter-spacing:-0.015em}
+  .sec-head .meta{display:flex;align-items:center;gap:16px;flex:0 0 auto;padding-top:4px}
+  .sec-head .lead{font-size:13px;color:var(--grey);max-width:40em;line-height:1.45;margin:9px 0 0;font-weight:400}
+  .sec-count{font-size:12px;color:var(--faint);font-weight:500}
+  .chev{transition:transform .25s ease;color:var(--grey)}
+  .section.open .chev{transform:rotate(180deg)}
+  .sec-body{display:none;padding:22px 0 32px}
+  .section.open .sec-body{display:block}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .subhead{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--grey);font-weight:600;margin:30px 0 16px}
+  .subhead:first-child{margin-top:0}
+
+  /* type label as plain text eyebrow (no box) + small status flag */
+  .type-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .type-label{font-size:10px;text-transform:uppercase;letter-spacing:0.09em;font-weight:600;color:var(--grey)}
+  .pill-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pill{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;font-weight:600;color:var(--blue);background:#fff;border:1px solid var(--line);padding:3px 8px;border-radius:var(--radius-sm)}
+  .pill.new{background:var(--sage);color:#fff;border-color:var(--sage)}      /* Sage, not red */
+  .pill.upd{background:var(--sage-tint);color:#56583f;border-color:var(--sage-tint)}
+
+  /* document card */
+  .doc{display:flex;flex-direction:column;gap:10px;background:var(--sand-50);border-radius:var(--radius);padding:20px 20px 18px;border:1px solid transparent;transition:border-color .15s ease;min-height:158px}
+  .doc:hover{border-color:var(--blue)}
+  .doc h3{font-size:16px;font-weight:500;line-height:1.25;margin-top:2px;letter-spacing:-0.005em}
+  .doc p{font-size:12.5px;color:var(--grey);line-height:1.4;flex:1}
+  .doc .go{font-size:12px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:6px;margin-top:4px}
+
+  /* video card */
+  .vid{display:flex;flex-direction:column;background:var(--blue-tint);border-radius:var(--radius);overflow:hidden;border:1px solid transparent;transition:border-color .15s ease}
+  .vid:hover{border-color:var(--blue)}
+  .thumb{aspect-ratio:16/9;background:var(--blue);position:relative;display:flex;align-items:center;justify-content:center}
+  .thumb .play{width:46px;height:46px;border-radius:99px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center}
+  .thumb .dur{position:absolute;bottom:10px;right:10px;font-size:11px;font-weight:500;color:#fff;background:rgba(0,0,0,.45);padding:3px 7px;border-radius:var(--radius-sm)}
+  .vid-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px}
+  .vid h3{font-size:15px;font-weight:500;line-height:1.25;letter-spacing:-0.005em}
+  .vid p{font-size:12.5px;color:var(--grey);line-height:1.4}
+
+  /* industry-news rows (Compliance) */
+  .news-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .news-row{display:flex;align-items:center;gap:20px;padding:16px 20px;border-top:1px solid var(--line);cursor:pointer;background:#fff;transition:background .15s ease}
+  .news-row:first-child{border-top:none}
+  .news-row:hover{background:var(--sand-25)}
+  .news-row .nfmt{flex:0 0 84px;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;font-weight:600;color:var(--blue)}
+  .news-row .ncontent{flex:1}
+  .news-row .ntitle{font-size:15px;font-weight:500;line-height:1.25;letter-spacing:-0.005em}
+  .news-row .ndesc{font-size:12.5px;color:var(--grey);margin-top:4px;line-height:1.4}
+  .news-row .nright{flex:0 0 auto;display:flex;align-items:center;gap:14px}
+  .news-row .nbtn{font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap}
+
+  /* huddle schedule (numbered) */
+  .schedule{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .ev{display:flex;align-items:center;gap:22px;padding:18px 22px;border-top:1px solid var(--line);cursor:pointer;transition:background .15s ease}
+  .ev:first-child{border-top:none}
+  .ev:hover{background:var(--sand-25)}
+  .ev .enum{flex:0 0 auto;font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:22px;font-weight:400;color:var(--blue);width:34px}
+  .ev .ebody{flex:1}
+  .ev .etitle{font-size:15px;font-weight:500;line-height:1.25;letter-spacing:-0.005em}
+  .ev .ewhen{font-size:12px;color:var(--grey);margin-top:4px}
+  .ev .eright{flex:0 0 auto;display:flex;align-items:center;gap:14px}
+  .ev .ebtn{font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap}
+
+  .empty{display:none;padding:40px 0;color:var(--faint);font-size:14px}
+  .section.no-match{display:none}
+
+  /* ---------- Compliance Corner native panels ---------- */
+  .cc-list{display:flex;flex-direction:column;gap:12px}
+  .cc-panel{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .cc-panel-head{
+    display:flex;align-items:center;gap:16px;padding:16px 20px;cursor:pointer;
+    background:#fff;border:none;width:100%;text-align:left;font-family:inherit;
+    transition:background .15s ease;
+  }
+  .cc-panel-head:hover{background:var(--sand-25)}
+  .cc-panel.open .cc-panel-head{background:var(--blue-tint-25)}
+  .cc-week-badge{
+    flex:0 0 auto;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--blue);background:var(--blue-tint-50);border:1px solid var(--blue-tint);
+    padding:3px 9px;border-radius:99px;white-space:nowrap;
+  }
+  .cc-panel-title{flex:1;font-size:15px;font-weight:500;line-height:1.25;letter-spacing:-0.005em;color:var(--ink)}
+  .cc-panel-meta{flex:0 0 auto;display:flex;align-items:center;gap:12px}
+  .cc-panel-desc{font-size:12.5px;color:var(--grey)}
+  .cc-chevron{color:var(--grey);transition:transform .22s ease;flex:0 0 auto}
+  .cc-panel.open .cc-chevron{transform:rotate(180deg)}
+  .cc-panel-body{display:none;padding:24px 20px 28px;border-top:1px solid var(--line);background:#fff}
+  .cc-panel.open .cc-panel-body{display:block}
+
+  /* inside the panel — Compliance Corner content styles */
+  .cc-panel-body .cc-section{margin-bottom:28px}
+  .cc-panel-body .cc-sh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .cc-panel-body .cc-sh-icon{
+    width:30px;height:30px;border-radius:7px;background:var(--blue);flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .cc-panel-body .cc-sh-icon svg{width:14px;height:14px;fill:none;stroke:#dce2ff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .cc-panel-body .cc-sh h3{font-size:16px;font-weight:500;color:var(--blue);letter-spacing:-0.005em}
+  .cc-panel-body .cc-card{background:var(--sand-50);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px}
+  .cc-panel-body .cc-card p{font-size:13.5px;color:var(--grey);line-height:1.7}
+  .cc-panel-body .cc-card p+p{margin-top:10px}
+  .cc-panel-body .cc-note{
+    margin-top:14px;background:var(--blue-tint-50);border-left:3px solid var(--blue);
+    border-radius:0 6px 6px 0;padding:11px 14px;font-size:13px;color:var(--grey);line-height:1.6;
+  }
+  .cc-panel-body .cc-note strong{color:var(--ink)}
+  .cc-panel-body .cc-list-items{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:7px}
+  .cc-panel-body .cc-list-items li{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;color:var(--grey);line-height:1.6}
+  .cc-panel-body .cc-list-items li::before{content:'';display:inline-block;flex-shrink:0;margin-top:7px;width:5px;height:5px;border-radius:50%;background:var(--blue)}
+  .cc-panel-body .cc-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  .cc-panel-body .cc-table thead th{background:var(--blue);color:#dce2ff;font-weight:600;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;padding:9px 14px;text-align:left}
+  .cc-panel-body .cc-table thead th:first-child{border-radius:6px 0 0 0}
+  .cc-panel-body .cc-table thead th:last-child{border-radius:0 6px 0 0}
+  .cc-panel-body .cc-table tbody tr{border-bottom:1px solid var(--line)}
+  .cc-panel-body .cc-table tbody tr:last-child{border-bottom:none}
+  .cc-panel-body .cc-table tbody tr:hover{background:var(--blue-tint-25)}
+  .cc-panel-body .cc-table td{padding:10px 14px;color:var(--grey);vertical-align:top;font-size:13px}
+  .cc-panel-body .cc-table td:last-child{font-weight:500;color:var(--ink)}
+  .cc-panel-body .cc-update{
+    background:var(--blue-tint-50);border:1px solid var(--blue-tint);border-left:3px solid var(--blue);
+    border-radius:var(--radius);padding:18px 20px;margin-top:20px;
+  }
+  .cc-panel-body .cc-update-tag{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;display:block}
+  .cc-panel-body .cc-update h4{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px;letter-spacing:-0.005em}
+  .cc-panel-body .cc-update p{font-size:13px;color:var(--grey);line-height:1.65}
+  .cc-panel-body .cc-update p+p{margin-top:8px}
+  .cc-panel-body .cc-update ul{margin-top:10px;list-style:none;display:flex;flex-direction:column;gap:6px}
+  .cc-panel-body .cc-update ul li{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--grey);line-height:1.6}
+  .cc-panel-body .cc-update ul li::before{content:'';display:inline-block;flex-shrink:0;margin-top:7px;width:5px;height:5px;border-radius:50%;background:var(--blue)}
+  .cc-panel-body .cc-ol{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:10px}
+  .cc-panel-body .cc-ol li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:var(--grey);line-height:1.6}
+  .cc-panel-body .cc-ol-num{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .cc-panel-body .cc-req-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  .cc-panel-body .cc-req-table thead th{background:var(--blue);color:#dce2ff;font-weight:600;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;padding:9px 14px;text-align:left}
+  .cc-panel-body .cc-req-table thead th:first-child{border-radius:6px 0 0 0}
+  .cc-panel-body .cc-req-table thead th:last-child{border-radius:0 6px 0 0}
+  .cc-panel-body .cc-req-table tbody tr{border-bottom:1px solid var(--line)}
+  .cc-panel-body .cc-req-table tbody tr:last-child{border-bottom:none}
+  .cc-panel-body .cc-req-table td{padding:10px 14px;color:var(--grey);vertical-align:top;font-size:13px}
+  .cc-panel-body .cc-req-table td:first-child{font-weight:500;color:var(--ink);width:35%}
+  .cc-subhead-row{margin:20px 0 10px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.09em;color:var(--grey)}
+  .cc-divider{border:none;border-top:1px solid var(--line);margin:20px 0}
+
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr;padding-top:36px}
+    .hero h1{font-size:40px}
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .topnav{display:none}
+    .hero-right{order:-1}
+  }
+  @media(max-width:600px){
+    .grid{grid-template-columns:1fr}
+    .hero,.stagebar-inner,main{padding-left:20px;padding-right:20px}
+    .news-row,.ev{flex-wrap:wrap}
+    .news-row .nfmt{flex-basis:auto}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="imn" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTA2NCIgaGVpZ2h0PSIxOTIiIHZpZXdCb3g9IjAgMCAxMDY0IDE5MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTYyLjg5OTUgMzIuNTY3MVYwLjU4NDI1OUg4Ni4zNTM2VjMyLjU2NzFDODYuMzUzNiA2My43NzI4IDYxLjA1NjMgODkuMDcgMjkuODUwNiA4OS4wN0gwVjY1LjYxNkgyOS44NTA2QzQ4LjEwMyA2NS42MTYgNjIuODk5NSA1MC44MTk1IDYyLjg5OTUgMzIuNTY3MVoiIGZpbGw9IiMxMzFGNUIiLz4KPHBhdGggZD0iTTEyNC43MzMgMzIuNTY3MlYwLjU4NDQxMkgxMDEuMjc5VjMyLjU2NzJDMTAxLjI3OSA2My43NzI5IDEyNi41NzYgODkuMDcwMiAxNTcuNzgyIDg5LjA3MDJIMTg3LjYzM1Y2NS42MTYxSDE1Ny43ODJDMTM5LjUzIDY1LjYxNjEgMTI0LjczMyA1MC44MTk2IDEyNC43MzMgMzIuNTY3MloiIGZpbGw9IiMxMzFGNUIiLz4KPHBhdGggZD0iTTYyLjg5OTUgMTU5LjQzM1YxOTEuNDE1SDg2LjM1MzZWMTU5LjQzM0M4Ni4zNTM2IDEyOC4yMjcgNjEuMDU2MyAxMDIuOTMgMjkuODUwNiAxMDIuOTNIMFYxMjYuMzg0SDI5Ljg1MDZDNDguMTAzIDEyNi4zODQgNjIuODk5NSAxNDEuMTggNjIuODk5NSAxNTkuNDMzWiIgZmlsbD0iIzEzMUY1QiIvPgo8cGF0aCBkPSJNMTI0LjczMyAxNTkuNDMzVjE5MS40MTVIMTAxLjI3OVYxNTkuNDMzQzEwMS4yNzkgMTI4LjIyNyAxMjYuNTc2IDEwMi45MyAxNTcuNzgyIDEwMi45M0gxODcuNjMzVjEyNi4zODRIMTU3Ljc4MkMxMzkuNTMgMTI2LjM4NCAxMjQuNzMzIDE0MS4xOCAxMjQuNzMzIDE1OS40MzNaIiBmaWxsPSIjMTMxRjVCIi8+CjxwYXRoIGQ9Ik04MDYuNjE2IDc2Ljg3ODJDODAxLjE4NiA3Ni44NzgyIDc5Ny4wMDMgNzUuNTYxNiA3OTQuMDY4IDcyLjkyODRDNzkxLjEzMiA3MC4yOTUyIDc4OS42NjUgNjUuOTc5NyA3ODkuNjY1IDU5Ljk4MTlWMzIuMjIzN0g3ODEuNDA5VjIyLjQ1OUg3ODkuNjY1VjkuMjkzMDNIODAxLjMzM1YyMi40NTlIODE1LjIwMlYzMi4yMjM3SDgwMS4zMzNWNTkuOTgxOUM4MDEuMzMzIDYyLjc2MTQgODAxLjk1NiA2NC42MjY2IDgwMy4yMDQgNjUuNTc3NEM4MDQuNDUxIDY2LjUyODMgODA2LjM5NiA2Ny4wMDM3IDgwOS4wMzggNjcuMDAzN0g4MTUuMjAyVjc2Ljg3ODJIODA2LjYxNloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik03MjguMTg2IDc2Ljg3ODJWMjIuNDM3NUg3MzkuMzUyTDczOS41NzEgMzAuNDVDNzQxLjM5NiAyNy40NDk5IDc0My45MTQgMjUuMTQ0OSA3NDcuMTI1IDIzLjUzNTFDNzUwLjQxIDIxLjkyNTMgNzUzLjg3NyAyMS4xMjA0IDc1Ny41MjYgMjEuMTIwNEM3NjMuODc2IDIxLjEyMDQgNzY5LjAyMSAyMy4xMzI3IDc3Mi45NjMgMjcuMTU3MkM3NzYuOTA0IDMxLjEwODUgNzc4Ljg3NCAzNy4wMzU1IDc3OC44NzQgNDQuOTM4MlY3Ni44NzgySDc2Ny4yN1Y0Ni4zNjUxQzc2Ny4yNyA0MS40NjI1IDc2Ni4xNzUgMzcuNjk0MSA3NjMuOTg1IDM1LjA1OThDNzYxLjc5NiAzMi4zNTI0IDc1OC41MTEgMzAuOTk4NyA3NTQuMTMyIDMwLjk5ODdDNzQ5LjgyNiAzMC45OTg3IDc0Ni4zNTkgMzIuNDk4OCA3NDMuNzMyIDM1LjQ5ODlDNzQxLjEwNCAzOC40MjU4IDczOS43OSA0Mi40ODY5IDczOS43OSA0Ny42ODIyVjc2Ljg3ODJINzI4LjE4NloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik02OTcuMjU5IDc4LjU2NzhDNjkxLjg4OSA3OC41Njc4IDY4Ny4xNDQgNzcuMzUyNiA2ODMuMDI0IDc0LjkyMjFDNjc4LjkwNSA3Mi40OTE2IDY3NS42NjggNjkuMTAzNyA2NzMuMzE0IDY0Ljc1ODNDNjcxLjAzNCA2MC40MTI5IDY2OS44OTQgNTUuNDQxNSA2NjkuODk0IDQ5Ljg0NDFDNjY5Ljg5NCA0NC4wMjU3IDY3MS4wMzQgMzguOTgwNiA2NzMuMzE0IDM0LjcwODlDNjc1LjU5NSAzMC40MzcyIDY3OC43OTUgMjcuMTIyOSA2ODIuOTE0IDI0Ljc2NjFDNjg3LjEwNyAyMi4zMzU2IDY5MS45MjUgMjEuMTIwNCA2OTcuMzY5IDIxLjEyMDRDNzAyLjY2NSAyMS4xMjA0IDcwNy4zIDIyLjI5ODggNzExLjI3MiAyNC42NTU2QzcxNS4yNDUgMjYuOTM4OCA3MTguMzM0IDMwLjA2ODkgNzIwLjU0MSAzNC4wNDYxQzcyMi44MjEgMzguMDIzMiA3MjMuOTYyIDQyLjU1MjcgNzIzLjk2MiA0Ny42MzQ2QzcyMy45NjIgNDguNjY1NyA3MjMuOTI1IDQ5LjU0OTUgNzIzLjg1MSA1MC4yODZDNzIzLjg1MSA1MS4wMjI1IDcyMy43NzggNTEuOTA2MyA3MjMuNjMxIDUyLjkzNzRINjgxLjU5QzY4MS44MTEgNTYuMDMwNyA2ODIuNTgzIDU4Ljc5MjYgNjgzLjkwNyA2MS4yMjMxQzY4NS4yMzEgNjMuNTc5OSA2ODcuMDM0IDY1LjQ1OCA2ODkuMzE0IDY2Ljg1NzRDNjkxLjU5NCA2OC4xODMxIDY5NC4yMDYgNjguODQ1OSA2OTcuMTQ4IDY4Ljg0NTlDNzAwLjMxMSA2OC44NDU5IDcwMi45OTYgNjguMTQ2MiA3MDUuMjAzIDY2Ljc0NjlDNzA3LjQ4NCA2NS4yNzM5IDcwOS4xNzYgNjMuMjExNyA3MTAuMjc5IDYwLjU2MDJINzIyLjQxN0M3MjEuNDYxIDYzLjg3NDUgNzE5Ljg0MiA2Ni44OTQyIDcxNy41NjIgNjkuNjE5M0M3MTUuMzU1IDcyLjM0NDMgNzEyLjU2IDc0LjUxNyA3MDkuMTc2IDc2LjEzNzNDNzA1Ljc5MiA3Ny43NTc2IDcwMS44MiA3OC41Njc4IDY5Ny4yNTkgNzguNTY3OFpNNjgxLjcgNDQuNjUxN0g3MTIuMDQ1QzcxMS44OTggNDAuMzggNzEwLjM4OSAzNy4wMjg5IDcwNy41MjEgMzQuNTk4NEM3MDQuNjUyIDMyLjA5NDMgNzAxLjE1NyAzMC44NDIzIDY5Ny4wMzggMzAuODQyM0M2OTMuMzYgMzAuODQyMyA2OTAuMDEzIDMxLjk4MzkgNjg2Ljk5NyAzNC4yNjdDNjgzLjk4MSAzNi41NTAyIDY4Mi4yMTUgNDAuMDExOCA2ODEuNyA0NC42NTE3WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTU1MS42MiA3Ni44NzgyVjIyLjQzNzVINTYyLjk3M0w1NjMuMTk1IDMwLjQ1QzU2NS4wNSAyNy40NDk5IDU2Ny42MSAyNS4xNDQ5IDU3MC44NzUgMjMuNTM1MUM1NzQuMjE0IDIxLjkyNTMgNTc3LjczOSAyMS4xMjA0IDU4MS40NDkgMjEuMTIwNEM1ODcuOTA1IDIxLjEyMDQgNTkzLjEzNiAyMy4xMzI3IDU5Ny4xNDMgMjcuMTU3MkM2MDEuMTUgMzEuMTA4NSA2MDMuMTUzIDM3LjAzNTUgNjAzLjE1MyA0NC45MzgyVjc2Ljg3ODJINTkxLjM1NVY0Ni4zNjUxQzU5MS4zNTUgNDEuNDYyNSA1OTAuMjQyIDM3LjY5NDEgNTg4LjAxNiAzNS4wNTk4QzU4NS43OSAzMi4zNTI0IDU4Mi40NTEgMzAuOTk4NyA1NzcuOTk5IDMwLjk5ODdDNTczLjYyMSAzMC45OTg3IDU3MC4wOTYgMzIuNDk4OCA1NjcuNDI1IDM1LjQ5ODlDNTY0Ljc1MyAzOC40MjU4IDU2My40MTggNDIuNDg2OSA1NjMuNDE4IDQ3LjY4MjJWNzYuODc4Mkg1NTEuNjJaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNNTIwLjY5MyA3OC41Njc4QzUxNS4zMjMgNzguNTY3OCA1MTAuNTc4IDc3LjM1MjYgNTA2LjQ1OCA3NC45MjIxQzUwMi4zMzkgNzIuNDkxNiA0OTkuMTAyIDY5LjEwMzcgNDk2Ljc0OCA2NC43NTgzQzQ5NC40NjggNjAuNDEyOSA0OTMuMzI4IDU1LjQ0MTUgNDkzLjMyOCA0OS44NDQxQzQ5My4zMjggNDQuMDI1NyA0OTQuNDY4IDM4Ljk4MDYgNDk2Ljc0OCAzNC43MDg5QzQ5OS4wMjkgMzAuNDM3MiA1MDIuMjI5IDI3LjEyMjkgNTA2LjM0OCAyNC43NjYxQzUxMC41NDEgMjIuMzM1NiA1MTUuMzU5IDIxLjEyMDQgNTIwLjgwMyAyMS4xMjA0QzUyNi4xIDIxLjEyMDQgNTMwLjczNCAyMi4yOTg4IDUzNC43MDYgMjQuNjU1NkM1MzguNjc5IDI2LjkzODggNTQxLjc2OCAzMC4wNjg5IDU0My45NzUgMzQuMDQ2MUM1NDYuMjU2IDM4LjAyMzIgNTQ3LjM5NiA0Mi41NTI3IDU0Ny4zOTYgNDcuNjM0NkM1NDcuMzk2IDQ4LjY2NTcgNTQ3LjM1OSA0OS41NDk1IDU0Ny4yODUgNTAuMjg2QzU0Ny4yODUgNTEuMDIyNSA1NDcuMjEyIDUxLjkwNjMgNTQ3LjA2NSA1Mi45Mzc0SDUwNS4wMjRDNTA1LjI0NSA1Ni4wMzA3IDUwNi4wMTcgNTguNzkyNiA1MDcuMzQxIDYxLjIyMzFDNTA4LjY2NSA2My41Nzk5IDUxMC40NjggNjUuNDU4IDUxMi43NDggNjYuODU3NEM1MTUuMDI4IDY4LjE4MzEgNTE3LjY0IDY4Ljg0NTkgNTIwLjU4MiA2OC44NDU5QzUyMy43NDYgNjguODQ1OSA1MjYuNDMxIDY4LjE0NjIgNTI4LjYzNyA2Ni43NDY5QzUzMC45MTggNjUuMjczOSA1MzIuNjEgNjMuMjExNyA1MzMuNzEzIDYwLjU2MDJINTQ1Ljg1MUM1NDQuODk1IDYzLjg3NDUgNTQzLjI3NiA2Ni44OTQyIDU0MC45OTYgNjkuNjE5M0M1MzguNzg5IDcyLjM0NDMgNTM1Ljk5NCA3NC41MTcgNTMyLjYxIDc2LjEzNzNDNTI5LjIyNiA3Ny43NTc2IDUyNS4yNTQgNzguNTY3OCA1MjAuNjkzIDc4LjU2NzhaTTUwNS4xMzQgNDQuNjUxN0g1MzUuNDc5QzUzNS4zMzIgNDAuMzggNTMzLjgyNCAzNy4wMjg5IDUzMC45NTUgMzQuNTk4NEM1MjguMDg2IDMyLjA5NDMgNTI0LjU5MiAzMC44NDIzIDUyMC40NzIgMzAuODQyM0M1MTYuNzk0IDMwLjg0MjMgNTEzLjQ0NyAzMS45ODM5IDUxMC40MzEgMzQuMjY3QzUwNy40MTUgMzYuNTUwMiA1MDUuNjQ5IDQwLjAxMTggNTA1LjEzNCA0NC42NTE3WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTQwMS41NzQgNzguNTY3OEMzOTYuMjA0IDc4LjU2NzggMzkxLjQ1OSA3Ny4zNTI2IDM4Ny4zMzkgNzQuOTIyMUMzODMuMjIgNzIuNDkxNiAzNzkuOTgzIDY5LjEwMzcgMzc3LjYyOSA2NC43NTgzQzM3NS4zNDkgNjAuNDEyOSAzNzQuMjA4IDU1LjQ0MTUgMzc0LjIwOCA0OS44NDQxQzM3NC4yMDggNDQuMDI1NyAzNzUuMzQ5IDM4Ljk4MDYgMzc3LjYyOSAzNC43MDg5QzM3OS45MSAzMC40MzcyIDM4My4xMSAyNy4xMjI5IDM4Ny4yMjkgMjQuNzY2MUMzOTEuNDIyIDIyLjMzNTYgMzk2LjI0IDIxLjEyMDQgNDAxLjY4NCAyMS4xMjA0QzQwNi45OCAyMS4xMjA0IDQxMS42MTUgMjIuMjk4OCA0MTUuNTg3IDI0LjY1NTZDNDE5LjU2IDI2LjkzODggNDIyLjY0OSAzMC4wNjg5IDQyNC44NTYgMzQuMDQ2MUM0MjcuMTM2IDM4LjAyMzIgNDI4LjI3NyA0Mi41NTI3IDQyOC4yNzcgNDcuNjM0NkM0MjguMjc3IDQ4LjY2NTcgNDI4LjI0IDQ5LjU0OTUgNDI4LjE2NiA1MC4yODZDNDI4LjE2NiA1MS4wMjI1IDQyOC4wOTMgNTEuOTA2MyA0MjcuOTQ2IDUyLjkzNzRIMzg1LjkwNUMzODYuMTI2IDU2LjAzMDcgMzg2Ljg5OCA1OC43OTI2IDM4OC4yMjIgNjEuMjIzMUMzODkuNTQ2IDYzLjU3OTkgMzkxLjM0OCA2NS40NTggMzkzLjYyOSA2Ni44NTc0QzM5NS45MDkgNjguMTgzMSAzOTguNTIxIDY4Ljg0NTkgNDAxLjQ2MyA2OC44NDU5QzQwNC42MjYgNjguODQ1OSA0MDcuMzExIDY4LjE0NjIgNDA5LjUxOCA2Ni43NDY5QzQxMS43OTkgNjUuMjczOSA0MTMuNDkxIDYzLjIxMTcgNDE0LjU5NCA2MC41NjAySDQyNi43MzJDNDI1Ljc3NiA2My44NzQ1IDQyNC4xNTcgNjYuODk0MiA0MjEuODc3IDY5LjYxOTNDNDE5LjY3IDcyLjM0NDMgNDE2Ljg3NCA3NC41MTcgNDEzLjQ5MSA3Ni4xMzczQzQxMC4xMDcgNzcuNzU3NiA0MDYuMTM0IDc4LjU2NzggNDAxLjU3NCA3OC41Njc4Wk0zODYuMDE1IDQ0LjY1MTdINDE2LjM2QzQxNi4yMTIgNDAuMzggNDE0LjcwNCAzNy4wMjg5IDQxMS44MzUgMzQuNTk4NEM0MDguOTY3IDMyLjA5NDMgNDA1LjQ3MiAzMC44NDIzIDQwMS4zNTMgMzAuODQyM0MzOTcuNjc1IDMwLjg0MjMgMzk0LjMyOCAzMS45ODM5IDM5MS4zMTIgMzQuMjY3QzM4OC4yOTYgMzYuNTUwMiAzODYuNTMgNDAuMDExOCAzODYuMDE1IDQ0LjY1MTdaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMjU3LjYyNCA3Ni44NzgyVjIyLjQzNzVIMjY4Ljc5MUwyNjkuMDEgMzAuNDVDMjcwLjgzNSAyNy40NDk5IDI3My4zNTMgMjUuMTQ0OSAyNzYuNTY0IDIzLjUzNTFDMjc5Ljg0OCAyMS45MjUzIDI4My4zMTUgMjEuMTIwNCAyODYuOTY0IDIxLjEyMDRDMjkzLjMxNCAyMS4xMjA0IDI5OC40NiAyMy4xMzI3IDMwMi40MDEgMjcuMTU3MkMzMDYuMzQyIDMxLjEwODUgMzA4LjMxMyAzNy4wMzU1IDMwOC4zMTMgNDQuOTM4MlY3Ni44NzgySDI5Ni43MDhWNDYuMzY1MUMyOTYuNzA4IDQxLjQ2MjUgMjk1LjYxMyAzNy42OTQxIDI5My40MjQgMzUuMDU5OEMyOTEuMjM0IDMyLjM1MjQgMjg3Ljk1IDMwLjk5ODcgMjgzLjU3MSAzMC45OTg3QzI3OS4yNjQgMzAuOTk4NyAyNzUuNzk4IDMyLjQ5ODggMjczLjE3IDM1LjQ5ODlDMjcwLjU0MyAzOC40MjU4IDI2OS4yMjkgNDIuNDg2OSAyNjkuMjI5IDQ3LjY4MjJWNzYuODc4MkgyNTcuNjI0WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTIzOC4xOTMgNzYuODc4MlYwLjAwMDEwNjgxMkgyNTAuMDIxVjc2Ljg3ODJIMjM4LjE5M1oiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik00NjQuMzg4IDIwLjUyOUM0NTUuNzk4IDIwLjUyOSA0NDguMiAyNS4wODMgNDQ0LjczNSAzMC41NDQ3VjIyLjA4NDhINDMzLjM0NlY5OS45NDE2SDQzNi42NjVDNDQxLjEyMyA5OS45NDE2IDQ0NC43MzUgOTYuMzQzNiA0NDQuNzM1IDkxLjkwM1Y2OS42ODM3QzQ0OC4zMTQgNzUuMzU2IDQ1NS4zNDIgNzguODA4IDQ2My4zOCA3OC44MDhDNDc4LjIzNCA3OC44MDggNDg5Ljk0OCA2Ny40NjM0IDQ4OS45NDggNDkuNjY4NUM0ODkuOTQ4IDMxLjg3MzYgNDc4LjIxOCAyMC41MjkgNDY0LjM3MiAyMC41MjlINDY0LjM4OFpNNDYxLjE1MSA2OC4zNTQ4QzQ1MS42NjUgNjguMzU0OCA0NDMuOTU0IDYwLjc4NjMgNDQzLjk1NCA0OS42Njg1QzQ0My45NTQgMzguNTUwNyA0NTEuNjY1IDMwLjk4MjIgNDYxLjE1MSAzMC45ODIyQzQ3MC42MzYgMzAuOTgyMiA0NzguMzQ4IDM4LjU1MDcgNDc4LjM0OCA0OS42Njg1QzQ3OC4zNDggNjAuNzg2MyA0NzAuNjM2IDY4LjM1NDggNDYxLjE1MSA2OC4zNTQ4WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTQ2NC4zODggMjAuNTI5QzQ1NS43OTggMjAuNTI5IDQ0OC4yIDI1LjA4MyA0NDQuNzM1IDMwLjU0NDdWMjIuMDg0OEg0MzMuMzQ2Vjk5Ljk0MTZINDM2LjY2NUM0NDEuMTIzIDk5Ljk0MTYgNDQ0LjczNSA5Ni4zNDM2IDQ0NC43MzUgOTEuOTAzVjY5LjY4MzdDNDQ4LjMxNCA3NS4zNTYgNDU1LjM0MiA3OC44MDggNDYzLjM4IDc4LjgwOEM0NzguMjM0IDc4LjgwOCA0ODkuOTQ4IDY3LjQ2MzQgNDg5Ljk0OCA0OS42Njg1QzQ4OS45NDggMzEuODczNiA0NzguMjE4IDIwLjUyOSA0NjQuMzcyIDIwLjUyOUg0NjQuMzg4Wk00NjEuMTUxIDY4LjM1NDhDNDUxLjY2NSA2OC4zNTQ4IDQ0My45NTQgNjAuNzg2MyA0NDMuOTU0IDQ5LjY2ODVDNDQzLjk1NCAzOC41NTA3IDQ1MS42NjUgMzAuOTgyMiA0NjEuMTUxIDMwLjk4MjJDNDcwLjYzNiAzMC45ODIyIDQ3OC4zNDggMzguNTUwNyA0NzguMzQ4IDQ5LjY2ODVDNDc4LjM0OCA2MC43ODYzIDQ3MC42MzYgNjguMzU0OCA0NjEuMTUxIDY4LjM1NDhaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjIiLz4KPHBhdGggZD0iTTMzOC4xNzkgNzcuOTc2NEMzNDYuNTEzIDc3Ljk3NjQgMzUzLjg4NCA3My41MTkyIDM1Ny4yNDYgNjguMTczOFY3Ni40NTM3SDM2OC4yOTVWMC4yNTM0MzNIMzY1LjA3NUMzNjAuNzUgMC4yNTM0MzMgMzU3LjI0NiAzLjc3NDggMzU3LjI0NiA4LjEyMDkzVjI5Ljg2NzVDMzUzLjc3MyAyNC4zMTU5IDM0Ni45NTUgMjAuOTM3MyAzMzkuMTU3IDIwLjkzNzNDMzI0Ljc0NiAyMC45MzczIDMxMy4zODIgMzIuMDQwNiAzMTMuMzgyIDQ5LjQ1NjhDMzEzLjM4MiA2Ni44NzMxIDMyNC43NjIgNzcuOTc2NCAzMzguMTk1IDc3Ljk3NjRIMzM4LjE3OVpNMzQxLjMyIDMxLjE2ODFDMzUwLjUyMiAzMS4xNjgxIDM1OC4wMDQgMzguNTc1NiAzNTguMDA0IDQ5LjQ1NjhDMzU4LjAwNCA2MC4zMzggMzUwLjUyMiA2Ny43NDU2IDM0MS4zMiA2Ny43NDU2QzMzMi4xMTggNjcuNzQ1NiAzMjQuNjM2IDYwLjMzOCAzMjQuNjM2IDQ5LjQ1NjhDMzI0LjYzNiAzOC41NzU2IDMzMi4xMTggMzEuMTY4MSAzNDEuMzIgMzEuMTY4MVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik0zMzguMTc5IDc3Ljk3NjRDMzQ2LjUxMyA3Ny45NzY0IDM1My44ODQgNzMuNTE5MiAzNTcuMjQ2IDY4LjE3MzhWNzYuNDUzN0gzNjguMjk1VjAuMjUzNDMzSDM2NS4wNzVDMzYwLjc1IDAuMjUzNDMzIDM1Ny4yNDYgMy43NzQ4IDM1Ny4yNDYgOC4xMjA5M1YyOS44Njc1QzM1My43NzMgMjQuMzE1OSAzNDYuOTU1IDIwLjkzNzMgMzM5LjE1NyAyMC45MzczQzMyNC43NDYgMjAuOTM3MyAzMTMuMzgyIDMyLjA0MDYgMzEzLjM4MiA0OS40NTY4QzMxMy4zODIgNjYuODczMSAzMjQuNzYyIDc3Ljk3NjQgMzM4LjE5NSA3Ny45NzY0SDMzOC4xNzlaTTM0MS4zMiAzMS4xNjgxQzM1MC41MjIgMzEuMTY4MSAzNTguMDA0IDM4LjU3NTYgMzU4LjAwNCA0OS40NTY4QzM1OC4wMDQgNjAuMzM4IDM1MC41MjIgNjcuNzQ1NiAzNDEuMzIgNjcuNzQ1NkMzMzIuMTE4IDY3Ljc0NTYgMzI0LjYzNiA2MC4zMzggMzI0LjYzNiA0OS40NTY4QzMyNC42MzYgMzguNTc1NiAzMzIuMTE4IDMxLjE2ODEgMzQxLjMyIDMxLjE2ODFaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjIiLz4KPHBhdGggZD0iTTYzMy44NjQgNzcuOTc2NEM2NDIuMTk4IDc3Ljk3NjQgNjQ5LjU2OSA3My41MTkyIDY1Mi45MzEgNjguMTczOFY3Ni40NTM3SDY2My45OFYwLjI1MzQzM0g2NjAuNzZDNjU2LjQzNSAwLjI1MzQzMyA2NTIuOTMxIDMuNzc0OCA2NTIuOTMxIDguMTIwOTNWMjkuODY3NUM2NDkuNDU5IDI0LjMxNTkgNjQyLjY0IDIwLjkzNzMgNjM0Ljg0MiAyMC45MzczQzYyMC40MzIgMjAuOTM3MyA2MDkuMDY3IDMyLjA0MDYgNjA5LjA2NyA0OS40NTY4QzYwOS4wNjcgNjYuODczMSA2MjAuNDQ3IDc3Ljk3NjQgNjMzLjg4IDc3Ljk3NjRINjMzLjg2NFpNNjM3LjAwNSAzMS4xNjgxQzY0Ni4yMDcgMzEuMTY4MSA2NTMuNjg5IDM4LjU3NTYgNjUzLjY4OSA0OS40NTY4QzY1My42ODkgNjAuMzM4IDY0Ni4yMDcgNjcuNzQ1NiA2MzcuMDA1IDY3Ljc0NTZDNjI3LjgwMyA2Ny43NDU2IDYyMC4zMjEgNjAuMzM4IDYyMC4zMjEgNDkuNDU2OEM2MjAuMzIxIDM4LjU3NTYgNjI3LjgwMyAzMS4xNjgxIDYzNy4wMDUgMzEuMTY4MVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik02MzMuODY0IDc3Ljk3NjRDNjQyLjE5OCA3Ny45NzY0IDY0OS41NjkgNzMuNTE5MiA2NTIuOTMxIDY4LjE3MzhWNzYuNDUzN0g2NjMuOThWMC4yNTM0MzNINjYwLjc2QzY1Ni40MzUgMC4yNTM0MzMgNjUyLjkzMSAzLjc3NDggNjUyLjkzMSA4LjEyMDkzVjI5Ljg2NzVDNjQ5LjQ1OSAyNC4zMTU5IDY0Mi42NCAyMC45MzczIDYzNC44NDIgMjAuOTM3M0M2MjAuNDMyIDIwLjkzNzMgNjA5LjA2NyAzMi4wNDA2IDYwOS4wNjcgNDkuNDU2OEM2MDkuMDY3IDY2Ljg3MzEgNjIwLjQ0NyA3Ny45NzY0IDYzMy44OCA3Ny45NzY0SDYzMy44NjRaTTYzNy4wMDUgMzEuMTY4MUM2NDYuMjA3IDMxLjE2ODEgNjUzLjY4OSAzOC41NzU2IDY1My42ODkgNDkuNDU2OEM2NTMuNjg5IDYwLjMzOCA2NDYuMjA3IDY3Ljc0NTYgNjM3LjAwNSA2Ny43NDU2QzYyNy44MDMgNjcuNzQ1NiA2MjAuMzIxIDYwLjMzOCA2MjAuMzIxIDQ5LjQ1NjhDNjIwLjMyMSAzOC41NzU2IDYyNy44MDMgMzEuMTY4MSA2MzcuMDA1IDMxLjE2ODFaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjIiLz4KPHBhdGggZD0iTTk4Mi43NiAxOTAuMzFWMTM1Ljg3SDk5NEw5OTQuMzMgMTQ1LjA5Qzk5Ni4xNjcgMTQxLjc5NyA5OTguNjY0IDEzOS4yMzYgMTAwMS44MiAxMzcuNDA2QzEwMDUuMDYgMTM1LjUwNCAxMDA4Ljg0IDEzNC41NTMgMTAxMy4xNyAxMzQuNTUzVjE0Ni43MzZIMTAwOS45OEMxMDA0Ljc2IDE0Ni43MzYgMTAwMC44NyAxNDguMDkgOTk4LjI5NyAxNTAuNzk3Qzk5NS43MjYgMTUzLjQzMSA5OTQuNDQgMTU3LjQ5MiA5OTQuNDQgMTYyLjk4VjE5MC4zMUg5ODIuNzZaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNOTQ5Ljc5NSAxOTJDOTQ0LjUzIDE5MiA5MzkuNzc2IDE5MC44NTggOTM1LjUzNSAxODguNTc1QzkzMS4zNjYgMTg2LjIxOCA5MjguMDM5IDE4Mi44NjcgOTI1LjU1MiAxNzguNTIyQzkyMy4xMzkgMTc0LjE3NyA5MjEuOTMzIDE2OS4wNTggOTIxLjkzMyAxNjMuMTY2QzkyMS45MzMgMTU3LjI3NCA5MjMuMTc2IDE1Mi4xOTIgOTI1LjY2MiAxNDcuOTJDOTI4LjIyMiAxNDMuNjQ4IDkzMS42MjIgMTQwLjM3MSA5MzUuODY0IDEzOC4wODhDOTQwLjE3OCAxMzUuNzMxIDk0NC45NjggMTM0LjU1MyA5NTAuMjM0IDEzNC41NTNDOTU1LjQ5OSAxMzQuNTUzIDk2MC4yNTMgMTM1LjY5NCA5NjQuNDk0IDEzNy45NzdDOTY4LjczNiAxNDAuMjYxIDk3Mi4xMzYgMTQzLjUzOCA5NzQuNjk2IDE0Ny44MUM5NzcuMjU1IDE1Mi4wODEgOTc4LjUzNSAxNTcuMiA5NzguNTM1IDE2My4xNjZDOTc4LjUzNSAxNjguNzYzIDk3Ny4yOTIgMTczLjczNSA5NzQuODA2IDE3OC4wOEM5NzIuMzkyIDE4Mi40MjUgOTY5LjAyOCAxODUuODUgOTY0LjcxNCAxODguMzU0Qzk2MC4zOTkgMTkwLjc4NSA5NTUuNDI2IDE5MiA5NDkuNzk1IDE5MlpNOTQ5LjkwNSAxODEuODM2Qzk1My4xMjMgMTgxLjgzNiA5NTUuOTc1IDE4MS4wMjYgOTU4LjQ2MSAxNzkuNDA2Qzk2MS4wMjEgMTc3Ljc4NSA5NjMuMDMyIDE3NS41NzYgOTY0LjQ5NCAxNzIuNzc3Qzk2NS45NTcgMTY5LjkwNSA5NjYuNjg4IDE2Ni42NjQgOTY2LjY4OCAxNjMuMDU1Qzk2Ni42ODggMTU5LjM3MyA5NjUuOTU3IDE1Ni4xNjkgOTY0LjQ5NCAxNTMuNDQ0Qzk2My4xMDUgMTUwLjY0NSA5NjEuMTY3IDE0OC41MDkgOTU4LjY4IDE0Ny4wMzZDOTU2LjE5NCAxNDUuNDkgOTUzLjMwNSAxNDQuNzE2IDk1MC4wMTQgMTQ0LjcxNkM5NDYuNTc3IDE0NC43MTYgOTQzLjYxNiAxNDUuNTI3IDk0MS4xMjkgMTQ3LjE0N0M5MzguNzE2IDE0OC43NjcgOTM2Ljg1MSAxNTAuOTc3IDkzNS41MzUgMTUzLjc3NUM5MzQuMjkyIDE1Ni41IDkzMy42NyAxNTkuNjMxIDkzMy42NyAxNjMuMTY2QzkzMy42NyAxNjcuMjE3IDkzNC40MDEgMTcwLjY0MSA5MzUuODY0IDE3My40NEM5MzcuNCAxNzYuMjM5IDkzOS40MTEgMTc4LjMzOCA5NDEuODk3IDE3OS43MzdDOTQ0LjM4MyAxODEuMTM3IDk0Ny4wNTMgMTgxLjgzNiA5NDkuOTA1IDE4MS44MzZaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNODU5LjQxNiAxOTAuMzExTDg0My4zNjUgMTM1LjM5OEg4NTUuMDE5TDg2NS42ODMgMTc3LjhMODc3LjMzNyAxMzUuMzk4SDg4OS45OEw5MDEuNjM0IDE3Ny42ODlMOTEyLjE4OCAxMzUuMzk4SDkyMy42MjJMOTA3LjU3MSAxOTAuMkg4OTUuMjU3TDg4My40OTMgMTQ4LjQ2Mkw4NzEuNzMgMTkwLjMxMUg4NTkuNDE2WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTgzMC41NTYgMTkwLjMxMUM4MjUuMTI1IDE5MC4zMTEgODIwLjk0MiAxODguOTk0IDgxOC4wMDcgMTg2LjM2MUM4MTUuMDcyIDE4My43MjggODEzLjYwNCAxNzkuNDEyIDgxMy42MDQgMTczLjQxNFYxNDUuNjU2SDgwNS4zNDlWMTM1Ljg5Mkg4MTMuNjA0VjEyMi43MjZIODI1LjI3MlYxMzUuODkySDgzOS4xNDFWMTQ1LjY1Nkg4MjUuMjcyVjE3My40MTRDODI1LjI3MiAxNzYuMTk0IDgyNS44OTYgMTc4LjA1OSA4MjcuMTQzIDE3OS4wMUM4MjguMzkxIDE3OS45NjEgODMwLjMzNSAxODAuNDM2IDgzMi45NzcgMTgwLjQzNkg4MzkuMTQxVjE5MC4zMTFIODMwLjU1NloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik03NzkuNDkgMTkyQzc3NC4xMiAxOTIgNzY5LjM3NSAxOTAuNzg1IDc2NS4yNTYgMTg4LjM1NEM3NjEuMTM2IDE4NS45MjQgNzU3LjkgMTgyLjUzNiA3NTUuNTQ2IDE3OC4xOTFDNzUzLjI2NSAxNzMuODQ1IDc1Mi4xMjUgMTY4Ljg3NCA3NTIuMTI1IDE2My4yNzZDNzUyLjEyNSAxNTcuNDU4IDc1My4yNjUgMTUyLjQxMyA3NTUuNTQ2IDE0OC4xNDFDNzU3LjgyNiAxNDMuODY5IDc2MS4wMjYgMTQwLjU1NSA3NjUuMTQ1IDEzOC4xOThDNzY5LjMzOCAxMzUuNzY4IDc3NC4xNTcgMTM0LjU1MyA3NzkuNiAxMzQuNTUzQzc4NC44OTcgMTM0LjU1MyA3ODkuNTMxIDEzNS43MzEgNzkzLjUwNCAxMzguMDg4Qzc5Ny40NzYgMTQwLjM3MSA4MDAuNTY2IDE0My41MDEgODAyLjc3MyAxNDcuNDc4QzgwNS4wNTMgMTUxLjQ1NSA4MDYuMTkzIDE1NS45ODUgODA2LjE5MyAxNjEuMDY3QzgwNi4xOTMgMTYyLjA5OCA4MDYuMTU2IDE2Mi45ODIgODA2LjA4MyAxNjMuNzE4QzgwNi4wODMgMTY0LjQ1NSA4MDYuMDA5IDE2NS4zMzkgODA1Ljg2MiAxNjYuMzdINzYzLjgyMUM3NjQuMDQyIDE2OS40NjMgNzY0LjgxNCAxNzIuMjI1IDc2Ni4xMzkgMTc0LjY1NUM3NjcuNDYzIDE3Ny4wMTIgNzY5LjI2NSAxNzguODkgNzcxLjU0NSAxODAuMjlDNzczLjgyNiAxODEuNjE1IDc3Ni40MzcgMTgyLjI3OCA3NzkuMzggMTgyLjI3OEM3ODIuNTQzIDE4Mi4yNzggNzg1LjIyOCAxODEuNTc4IDc4Ny40MzUgMTgwLjE3OUM3ODkuNzE1IDE3OC43MDYgNzkxLjQwNyAxNzYuNjQ0IDc5Mi41MTEgMTczLjk5Mkg4MDQuNjQ4QzgwMy42OTIgMTc3LjMwNyA4MDIuMDc0IDE4MC4zMjYgNzk5Ljc5MyAxODMuMDUxQzc5Ny41ODYgMTg1Ljc3NyA3OTQuNzkxIDE4Ny45NDkgNzkxLjQwNyAxODkuNTdDNzg4LjAyMyAxOTEuMTkgNzg0LjA1MSAxOTIgNzc5LjQ5IDE5MlpNNzYzLjkzMiAxNTguMDg0SDc5NC4yNzZDNzk0LjEyOSAxNTMuODEyIDc5Mi42MjEgMTUwLjQ2MSA3ODkuNzUyIDE0OC4wMzFDNzg2Ljg4MyAxNDUuNTI3IDc4My4zODkgMTQ0LjI3NSA3NzkuMjY5IDE0NC4yNzVDNzc1LjU5MSAxNDQuMjc1IDc3Mi4yNDQgMTQ1LjQxNiA3NjkuMjI4IDE0Ny42OTlDNzY2LjIxMiAxNDkuOTgyIDc2NC40NDcgMTUzLjQ0NCA3NjMuOTMyIDE1OC4wODRaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNNjgzLjY5NSAxOTAuMzFWMTEzLjQzMkg2OTUuNDY1TDczNC40NDEgMTcxLjA5MVYxMTMuNDMySDc0Ni4yMTFWMTkwLjMxSDczNC40NDFMNjk1LjQ2NSAxMzIuNjUyVjE5MC4zMUg2ODMuNjk1WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTYyOS45NTggMTkyQzYyNC41ODggMTkyIDYxOS44NDMgMTkwLjc4NSA2MTUuNzI0IDE4OC4zNTRDNjExLjYwNCAxODUuOTI0IDYwOC4zNjcgMTgyLjUzNiA2MDYuMDEzIDE3OC4xOTFDNjAzLjczMyAxNzMuODQ1IDYwMi41OTMgMTY4Ljg3NCA2MDIuNTkzIDE2My4yNzZDNjAyLjU5MyAxNTcuNDU4IDYwMy43MzMgMTUyLjQxMyA2MDYuMDEzIDE0OC4xNDFDNjA4LjI5NCAxNDMuODY5IDYxMS40OTQgMTQwLjU1NSA2MTUuNjEzIDEzOC4xOThDNjE5LjgwNiAxMzUuNzY4IDYyNC42MjUgMTM0LjU1MyA2MzAuMDY4IDEzNC41NTNDNjM1LjM2NSAxMzQuNTUzIDYzOS45OTkgMTM1LjczMSA2NDMuOTcxIDEzOC4wODhDNjQ3Ljk0NCAxNDAuMzcxIDY1MS4wMzMgMTQzLjUwMSA2NTMuMjQgMTQ3LjQ3OEM2NTUuNTIxIDE1MS40NTUgNjU2LjY2MSAxNTUuOTg1IDY1Ni42NjEgMTYxLjA2N0M2NTYuNjYxIDE2Mi4wOTggNjU2LjYyNCAxNjIuOTgyIDY1Ni41NTEgMTYzLjcxOEM2NTYuNTUxIDE2NC40NTUgNjU2LjQ3NyAxNjUuMzM5IDY1Ni4zMyAxNjYuMzdINjE0LjI4OUM2MTQuNTEgMTY5LjQ2MyA2MTUuMjgyIDE3Mi4yMjUgNjE2LjYwNiAxNzQuNjU1QzYxNy45MyAxNzcuMDEyIDYxOS43MzMgMTc4Ljg5IDYyMi4wMTMgMTgwLjI5QzYyNC4yOTQgMTgxLjYxNSA2MjYuOTA1IDE4Mi4yNzggNjI5Ljg0NyAxODIuMjc4QzYzMy4wMTEgMTgyLjI3OCA2MzUuNjk2IDE4MS41NzggNjM3LjkwMyAxODAuMTc5QzY0MC4xODMgMTc4LjcwNiA2NDEuODc1IDE3Ni42NDQgNjQyLjk3OCAxNzMuOTkySDY1NS4xMTZDNjU0LjE2IDE3Ny4zMDcgNjUyLjU0MSAxODAuMzI2IDY1MC4yNjEgMTgzLjA1MUM2NDguMDU0IDE4NS43NzcgNjQ1LjI1OSAxODcuOTQ5IDY0MS44NzUgMTg5LjU3QzYzOC40OTEgMTkxLjE5IDYzNC41MTkgMTkyIDYyOS45NTggMTkyWk02MTQuMzk5IDE1OC4wODRINjQ0Ljc0NEM2NDQuNTk3IDE1My44MTIgNjQzLjA4OSAxNTAuNDYxIDY0MC4yMiAxNDguMDMxQzYzNy4zNTEgMTQ1LjUyNyA2MzMuODU3IDE0NC4yNzUgNjI5LjczNyAxNDQuMjc1QzYyNi4wNTkgMTQ0LjI3NSA2MjIuNzEyIDE0NS40MTYgNjE5LjY5NiAxNDcuNjk5QzYxNi42OCAxNDkuOTgyIDYxNC45MTQgMTUzLjQ0NCA2MTQuMzk5IDE1OC4wODRaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNNTcyLjE3OSAxOTAuMzFWMTM1Ljg3SDU4My43MzFMNTg0LjA3MSAxNDUuMDlDNTg1Ljk1OCAxNDEuNzk3IDU4OC41MjYgMTM5LjIzNiA1OTEuNzcyIDEzNy40MDZDNTk1LjA5NCAxMzUuNTA0IDU5OC45ODMgMTM0LjU1MyA2MDMuNDM3IDEzNC41NTNWMTQ2LjczNkg2MDAuMTUzQzU5NC43OTIgMTQ2LjczNiA1OTAuNzkxIDE0OC4wOSA1ODguMTQ4IDE1MC43OTdDNTg1LjUwNSAxNTMuNDMxIDU4NC4xODQgMTU3LjQ5MiA1ODQuMTg0IDE2Mi45OFYxOTAuMzFINTcyLjE3OVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik01MzIuNDExIDE5MkM1MjguODg5IDE5MiA1MjUuNjYxIDE5MS4zNzQgNTIyLjcyNyAxOTAuMTIyQzUxOS43OTIgMTg4Ljc5NiA1MTcuNDQ0IDE4Ni44ODEgNTE1LjY4NCAxODQuMzc3QzUxMy45MjMgMTgxLjg3MyA1MTMuMDQyIDE3OC44NTMgNTEzLjA0MiAxNzUuMzE4QzUxMy4wNDIgMTcxLjEyIDUxNC4wNyAxNjcuNzY5IDUxNi4xMjQgMTY1LjI2NUM1MTguMjUxIDE2Mi42ODcgNTIxLjA3NiAxNjAuODA5IDUyNC41OTcgMTU5LjYzMUM1MjguMTkyIDE1OC4zNzkgNTMyLjExNyAxNTcuNzUzIDUzNi4zNzIgMTU3Ljc1M0g1NTAuMjM4QzU1MC4yMzggMTU0LjU4NiA1NDkuNzI0IDE1Mi4wNDUgNTQ4LjY5NyAxNTAuMTNDNTQ3LjY3IDE0OC4xNDEgNTQ2LjI3NiAxNDYuNzA1IDU0NC41MTYgMTQ1LjgyMUM1NDIuNzU1IDE0NC44NjQgNTQwLjcwMSAxNDQuMzg1IDUzOC4zNTMgMTQ0LjM4NUM1MzUuMjcyIDE0NC4zODUgNTMyLjU1NyAxNDUuMTIxIDUzMC4yMSAxNDYuNTk0QzUyNy45MzUgMTQ3Ljk5NCA1MjYuNTA1IDE1MC4yNCA1MjUuOTE4IDE1My4zMzRINTE0LjE0M0M1MTQuNTEgMTQ5LjM1NiA1MTUuODMgMTQ1Ljk2OCA1MTguMTA1IDE0My4xN0M1MjAuNDUyIDE0MC4zNzEgNTIzLjQyMyAxMzguMjM1IDUyNy4wMTggMTM2Ljc2MkM1MzAuNjEzIDEzNS4yODkgNTM0LjQyOCAxMzQuNTUzIDUzOC40NjMgMTM0LjU1M0M1NDMuNzQ1IDEzNC41NTMgNTQ4LjExIDEzNS41NDcgNTUxLjU1OSAxMzcuNTM1QzU1NS4wOCAxMzkuNDUgNTU3LjY4NCAxNDIuMTM5IDU1OS4zNzIgMTQ1LjZDNTYxLjEzMyAxNDkuMDYyIDU2Mi4wMTMgMTUzLjAwMiA1NjIuMDEzIDE1Ny40MjFWMTc0LjIxM0M1NjIuMDg2IDE3Ni4zNDkgNTYyLjUyNiAxNzcuOTMzIDU2My4zMzMgMTc4Ljk2NEM1NjQuMjE0IDE3OS45MjEgNTY1Ljc1NSAxODAuNDc0IDU2Ny45NTUgMTgwLjYyMVYxOTAuNjc0QzU2NS4wMjEgMTkwLjY3NCA1NjIuNDUzIDE5MC4zNDMgNTYwLjI1MiAxODkuNjhDNTU4LjEyNSAxODkuMDE3IDU1Ni4zNjQgMTg4LjAyMyA1NTQuOTcgMTg2LjY5N0M1NTMuNTc2IDE4NS4yOTggNTUyLjQ3NiAxODMuNTMgNTUxLjY2OSAxODEuMzk0QzU0OS45MDggMTg0LjM0IDU0Ny4zNCAxODYuODQ0IDU0My45NjUgMTg4LjkwN0M1NDAuNTkxIDE5MC45NjkgNTM2LjczOSAxOTIgNTMyLjQxMSAxOTJaTTUzNS4xNjIgMTgyLjM4OUM1MzguMTcgMTgyLjM4OSA1NDAuODExIDE4MS42NTIgNTQzLjA4NSAxODAuMTc5QzU0NS4zNTkgMTc4LjYzMiA1NDcuMTIgMTc2LjY0NCA1NDguMzY3IDE3NC4yMTNDNTQ5LjYxNCAxNzEuNzA5IDU1MC4yMzggMTY5LjAyMSA1NTAuMjM4IDE2Ni4xNDlWMTY1LjkyOEg1MzcuMjUzQzUzNS4xMjUgMTY1LjkyOCA1MzMuMTA4IDE2Ni4xODYgNTMxLjIgMTY2LjcwMUM1MjkuMzY2IDE2Ny4yMTcgNTI3Ljg2MiAxNjguMSA1MjYuNjg4IDE2OS4zNTJDNTI1LjU4OCAxNzAuNTMxIDUyNS4wMzggMTcyLjE4OCA1MjUuMDM4IDE3NC4zMjRDNTI1LjAzOCAxNzcuMTIzIDUyNi4wMjggMTc5LjE4NSA1MjguMDA5IDE4MC41MTFDNTI5Ljk5IDE4MS43NjMgNTMyLjM3NCAxODIuMzg5IDUzNS4xNjIgMTgyLjM4OVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik00ODQuNDU2IDE5MkM0NzkuMTQ1IDE5MiA0NzQuNDUzIDE5MC43ODUgNDcwLjM3OSAxODguMzU0QzQ2Ni4zMDUgMTg1LjkyNCA0NjMuMTA0IDE4Mi41NzMgNDYwLjc3NyAxNzguMzAxQzQ1OC40NDkgMTczLjk1NiA0NTcuMjg1IDE2OC45NDcgNDU3LjI4NSAxNjMuMjc2QzQ1Ny4yODUgMTU3LjY3OSA0NTguNDEyIDE1Mi43MDcgNDYwLjY2NyAxNDguMzYyQzQ2Mi45MjMgMTQ0LjAxNyA0NjYuMDg3IDE0MC42MjkgNDcwLjE2MSAxMzguMTk4QzQ3NC4yMzUgMTM1Ljc2OCA0NzkgMTM0LjU1MyA0ODQuNDU2IDEzNC41NTNDNDkwLjkzMSAxMzQuNTUzIDQ5Ni4zODcgMTM2LjI0NyA1MDAuODI0IDEzOS42MzVDNTA1LjMzNSAxNDIuOTQ5IDUwOC4yODEgMTQ3LjYyNiA1MDkuNjYzIDE1My42NjVINDk3LjQ0MkM0OTYuNzg3IDE1MC45NCA0OTUuMjU5IDE0OC43MyA0OTIuODU4IDE0Ny4wMzZDNDkwLjUzIDE0NS4zNDIgNDg3LjY5MyAxNDQuNDk1IDQ4NC4zNDcgMTQ0LjQ5NUM0ODAuOTI4IDE0NC40OTUgNDc4LjA5MSAxNDUuMzc5IDQ3NS44MzUgMTQ3LjE0N0M0NzMuNTggMTQ4Ljg0MSA0NzEuODcxIDE1MS4xMjQgNDcwLjcwNyAxNTMuOTk2QzQ2OS42MTUgMTU2Ljc5NSA0NjkuMDcgMTU5Ljg4OCA0NjkuMDcgMTYzLjI3NkM0NjkuMDcgMTY2LjgxMiA0NjkuNjUyIDE3MC4wMTUgNDcwLjgxNiAxNzIuODg4QzQ3Mi4wNTIgMTc1LjY4NiA0NzMuNzk4IDE3Ny45MzMgNDc2LjA1NCAxNzkuNjI3QzQ3OC4zODIgMTgxLjI0NyA0ODEuMTQ2IDE4Mi4wNTcgNDg0LjM0NyAxODIuMDU3QzQ4Ny42MjEgMTgyLjA1NyA0OTAuNDIxIDE4MS4yODQgNDkyLjc0OSAxNzkuNzM3QzQ5NS4wNzcgMTc4LjExNyA0OTYuNjQxIDE3NS43OTcgNDk3LjQ0MiAxNzIuNzc3SDUwOS42NjNDNTA4Ljc5IDE3Ni42ODEgNTA3LjE5IDE4MC4wNjkgNTA0Ljg2MiAxODIuOTQxQzUwMi41MzQgMTg1LjgxMyA0OTkuNjI0IDE4OC4wNiA0OTYuMTMyIDE4OS42OEM0OTIuNjQgMTkxLjIyNyA0ODguNzQ4IDE5MiA0ODQuNDU2IDE5MloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik00NDUuNDAzIDEyNi4yNzVDNDQzLjMxOCAxMjYuMjc1IDQ0MS41MjEgMTI1LjU0MyA0NDAuMDExIDEyNC4wNzlDNDM4LjU3MyAxMjIuNTQxIDQzNy44NTQgMTIwLjY3NCA0MzcuODU0IDExOC40NzdDNDM3Ljg1NCAxMTYuMzUzIDQzOC41NzMgMTE0LjU1OSA0NDAuMDExIDExMy4wOTVDNDQxLjUyMSAxMTEuNjMgNDQzLjMxOCAxMTAuODk4IDQ0NS40MDMgMTEwLjg5OEM0NDcuNTYgMTEwLjg5OCA0NDkuMzU4IDExMS42MyA0NTAuNzk2IDExMy4wOTVDNDUyLjMwNiAxMTQuNTU5IDQ1My4wNjEgMTE2LjM1MyA0NTMuMDYxIDExOC40NzdDNDUzLjA2MSAxMjAuNjc0IDQ1Mi4zMDYgMTIyLjU0MSA0NTAuNzk2IDEyNC4wNzlDNDQ5LjM1OCAxMjUuNTQzIDQ0Ny41NiAxMjYuMjc1IDQ0NS40MDMgMTI2LjI3NVpNNDM5LjY4NyAxOTAuMzExVjEzNS44MzFINDUxLjExOVYxOTAuMzExSDQzOS42ODdaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMzQ2LjEgMTkyQzM0MC43MyAxOTIgMzM1Ljk4NSAxOTAuNzg1IDMzMS44NjYgMTg4LjM1NEMzMjcuNzQ2IDE4NS45MjQgMzI0LjUwOSAxODIuNTM2IDMyMi4xNTUgMTc4LjE5MUMzMTkuODc1IDE3My44NDUgMzE4LjczNSAxNjguODc0IDMxOC43MzUgMTYzLjI3NkMzMTguNzM1IDE1Ny40NTggMzE5Ljg3NSAxNTIuNDEzIDMyMi4xNTUgMTQ4LjE0MUMzMjQuNDM2IDE0My44NjkgMzI3LjYzNiAxNDAuNTU1IDMzMS43NTUgMTM4LjE5OEMzMzUuOTQ4IDEzNS43NjggMzQwLjc2NyAxMzQuNTUzIDM0Ni4yMSAxMzQuNTUzQzM1MS41MDcgMTM0LjU1MyAzNTYuMTQxIDEzNS43MzEgMzYwLjExNCAxMzguMDg4QzM2NC4wODYgMTQwLjM3MSAzNjcuMTc1IDE0My41MDEgMzY5LjM4MiAxNDcuNDc4QzM3MS42NjMgMTUxLjQ1NSAzNzIuODAzIDE1NS45ODUgMzcyLjgwMyAxNjEuMDY3QzM3Mi44MDMgMTYyLjA5OCAzNzIuNzY2IDE2Mi45ODIgMzcyLjY5MyAxNjMuNzE4QzM3Mi42OTMgMTY0LjQ1NSAzNzIuNjE5IDE2NS4zMzkgMzcyLjQ3MiAxNjYuMzdIMzMwLjQzMUMzMzAuNjUyIDE2OS40NjMgMzMxLjQyNCAxNzIuMjI1IDMzMi43NDggMTc0LjY1NUMzMzQuMDczIDE3Ny4wMTIgMzM1Ljg3NSAxNzguODkgMzM4LjE1NSAxODAuMjlDMzQwLjQzNiAxODEuNjE1IDM0My4wNDcgMTgyLjI3OCAzNDUuOTkgMTgyLjI3OEMzNDkuMTUzIDE4Mi4yNzggMzUxLjgzOCAxODEuNTc4IDM1NC4wNDUgMTgwLjE3OUMzNTYuMzI1IDE3OC43MDYgMzU4LjAxNyAxNzYuNjQ0IDM1OS4xMiAxNzMuOTkySDM3MS4yNThDMzcwLjMwMiAxNzcuMzA3IDM2OC42ODMgMTgwLjMyNiAzNjYuNDAzIDE4My4wNTFDMzY0LjE5NiAxODUuNzc3IDM2MS40MDEgMTg3Ljk0OSAzNTguMDE3IDE4OS41N0MzNTQuNjMzIDE5MS4xOSAzNTAuNjYxIDE5MiAzNDYuMSAxOTJaTTMzMC41NDIgMTU4LjA4NEgzNjAuODg2QzM2MC43MzkgMTUzLjgxMiAzNTkuMjMxIDE1MC40NjEgMzU2LjM2MiAxNDguMDMxQzM1My40OTMgMTQ1LjUyNyAzNDkuOTk5IDE0NC4yNzUgMzQ1Ljg3OSAxNDQuMjc1QzM0Mi4yMDEgMTQ0LjI3NSAzMzguODU0IDE0NS40MTYgMzM1LjgzOCAxNDcuNjk5QzMzMi44MjIgMTQ5Ljk4MiAzMzEuMDU2IDE1My40NDQgMzMwLjU0MiAxNTguMDg0WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTIzNy42MzMgMTkwLjMxVjExMy40MzJIMjUxLjQyN0wyNzUuODE1IDE2NC45NDFMMjk5Ljg3MiAxMTMuNDMySDMxMy42NjZWMTkwLjMxSDMwMS45NjlWMTM0LjI5OUwyODAuMjI5IDE3OS44NzdIMjcxLjE4TDI0OS4zMyAxMzQuMjk5VjE5MC4zMUgyMzcuNjMzWiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTQwMC45OCAxOTEuNDA5QzQwOS4zMTQgMTkxLjQwOSA0MTYuNjg1IDE4Ni45NTIgNDIwLjA0NyAxODEuNjA2VjE4OS44ODZINDMxLjA5NlYxMTMuNjg2SDQyNy44NzZDNDIzLjU1MSAxMTMuNjg2IDQyMC4wNDcgMTE3LjIwNyA0MjAuMDQ3IDEyMS41NTRWMTQzLjNDNDE2LjU3NCAxMzcuNzQ5IDQwOS43NTYgMTM0LjM3IDQwMS45NTggMTM0LjM3QzM4Ny41NDcgMTM0LjM3IDM3Ni4xODMgMTQ1LjQ3MyAzNzYuMTgzIDE2Mi44ODlDMzc2LjE4MyAxODAuMzA2IDM4Ny41NjMgMTkxLjQwOSA0MDAuOTk1IDE5MS40MDlINDAwLjk4Wk00MDQuMTIxIDE0NC42MDFDNDEzLjMyMyAxNDQuNjAxIDQyMC44MDQgMTUyLjAwOCA0MjAuODA0IDE2Mi44ODlDNDIwLjgwNCAxNzMuNzcxIDQxMy4zMjMgMTgxLjE3OCA0MDQuMTIxIDE4MS4xNzhDMzk0LjkxOCAxODEuMTc4IDM4Ny40MzcgMTczLjc3MSAzODcuNDM3IDE2Mi44ODlDMzg3LjQzNyAxNTIuMDA4IDM5NC45MTggMTQ0LjYwMSA0MDQuMTIxIDE0NC42MDFaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNNDAwLjk4IDE5MS40MDlDNDA5LjMxNCAxOTEuNDA5IDQxNi42ODUgMTg2Ljk1MiA0MjAuMDQ3IDE4MS42MDZWMTg5Ljg4Nkg0MzEuMDk2VjExMy42ODZINDI3Ljg3NkM0MjMuNTUxIDExMy42ODYgNDIwLjA0NyAxMTcuMjA3IDQyMC4wNDcgMTIxLjU1NFYxNDMuM0M0MTYuNTc0IDEzNy43NDkgNDA5Ljc1NiAxMzQuMzcgNDAxLjk1OCAxMzQuMzdDMzg3LjU0NyAxMzQuMzcgMzc2LjE4MyAxNDUuNDczIDM3Ni4xODMgMTYyLjg4OUMzNzYuMTgzIDE4MC4zMDYgMzg3LjU2MyAxOTEuNDA5IDQwMC45OTUgMTkxLjQwOUg0MDAuOThaTTQwNC4xMjEgMTQ0LjYwMUM0MTMuMzIzIDE0NC42MDEgNDIwLjgwNCAxNTIuMDA4IDQyMC44MDQgMTYyLjg4OUM0MjAuODA0IDE3My43NzEgNDEzLjMyMyAxODEuMTc4IDQwNC4xMjEgMTgxLjE3OEMzOTQuOTE4IDE4MS4xNzggMzg3LjQzNyAxNzMuNzcxIDM4Ny40MzcgMTYyLjg4OUMzODcuNDM3IDE1Mi4wMDggMzk0LjkxOCAxNDQuNjAxIDQwNC4xMjEgMTQ0LjYwMVoiIGZpbGw9ImJsYWNrIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8cGF0aCBkPSJNMTA0MS45MSAxNTQuNTJMMTA2MC42NSAxMzUuODQ0SDEwNDcuMjZMMTAyOS4xNiAxNTMuOTgyVjEyMS44MDVDMTAyOS4xNiAxMTcuMzEgMTAyNS41NyAxMTMuNjg2IDEwMjEuMTYgMTEzLjY4NkgxMDE4LjI0VjE4OS43MTlIMTAyOS4xNlYxNjcuMzRMMTAzNC4wOSAxNjIuMzM4TDEwNTEuMTEgMTg5LjcwM0gxMDYzLjg2TDEwNDEuOTEgMTU0LjUwNFYxNTQuNTJaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMTA0MS45MSAxNTQuNTJMMTA2MC42NSAxMzUuODQ0SDEwNDcuMjZMMTAyOS4xNiAxNTMuOTgyVjEyMS44MDVDMTAyOS4xNiAxMTcuMzEgMTAyNS41NyAxMTMuNjg2IDEwMjEuMTYgMTEzLjY4NkgxMDE4LjI0VjE4OS43MTlIMTAyOS4xNlYxNjcuMzRMMTAzNC4wOSAxNjIuMzM4TDEwNTEuMTEgMTg5LjcwM0gxMDYzLjg2TDEwNDEuOTEgMTU0LjUwNFYxNTQuNTJaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjIiLz4KPC9zdmc+Cg==" alt="Independent Medicare Network">
+    <span class="brand-sep"></span>
+    <span class="powered"><span class="star-red">✦</span> Powered by Spark</span>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search resources…" autocomplete="off">
+    </div>
+    <nav class="topnav">
+      <a href="#">Resource Center</a>
+      <a href="#">Join the Community</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-left">
+    <h1>Your 2027<br>AEP Resource Hub</h1>
+    <p>Everything you need to prepare, prospect, enroll, and retain — curated for independent Medicare agents.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary" id="browseBtn">Browse Resources →</button>
+      <button class="btn btn-ghost">Unlock All</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="countdown">
+      <div class="label">Time until AEP 2027 begins</div>
+      <div class="cd-row">
+        <div class="cd-unit"><span class="cd-num" id="d">115</span><span class="cd-tag">Days</span></div>
+        <div class="cd-unit"><span class="cd-num" id="h">06</span><span class="cd-tag">Hours</span></div>
+        <div class="cd-unit"><span class="cd-num" id="m">42</span><span class="cd-tag">Mins</span></div>
+        <div class="cd-unit"><span class="cd-num" id="s">18</span><span class="cd-tag">Secs</span></div>
+      </div>
+      <div class="cd-foot">
+        <div class="k">Annual Enrollment Period</div>
+        <div class="v">October 15 – December 7, 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stagebar">
+  <div class="stagebar-inner">
+    <div class="tabs" id="tabs"></div>
+  </div>
+</div>
+
+<main id="main"></main>
+<div class="empty" id="empty" style="max-width:1180px;margin:0 auto;padding:0 40px 80px">No resources match your search.</div>
+
+<script>
+/* ============ verbatim content from the source hub ============ */
+const SECTIONS = [
+  { id:'prep', nav:'AEP Prep', num:'Section 01', title:'AEP Prep — start here',
+    lead:'Certifications, SOA workflow, carrier contracting, and client outreach — everything to be fully ready on October 15.',
+    docs:[
+      {type:'Checklist', flag:'new', title:'AEP 2027 Agent Readiness Checklist', desc:'Full pre-AEP checklist: certifications, SOA setup, marketing approval, plan training, and client outreach calendar.', cta:'Download'},
+      {type:'Guide', title:'CY2027 Final Rule: What Agents Need to Know', desc:'SOA wait eliminated, 12-hour event gap removed, call recording reduced to 6 years — all confirmed changes in one place.', cta:'Download'},
+      {type:'Reference', title:'AEP Certification Deadline Tracker', desc:'AHIP and carrier certification deadlines across major plans — stay ahead of cutoffs so you can sell on day one.', cta:'Download'},
+      {type:'Guide', flag:'new', flagText:'New · August', title:'Carrier Plan Change Overview 2027', desc:'Notable benefit changes, premium shifts, and network updates across major MA carriers for plan year 2027.', cta:'Access'},
+    ],
+    vids:[
+      {format:'Video', dur:'~60 min', title:'2027 AEP Contracting Strategy', desc:'Which carriers to prioritize, how to get contracted fast, and which markets to target heading into AEP.', flag:'new', flagText:'New · July'},
+      {format:'Roundtable', dur:'~60 min', title:'AEP Readiness Leadership Roundtable', desc:"James Jiang and Nick Tatge on what's changing for 2027 and how agents can prepare now."},
+      {format:'Webinar', dur:'~48 min', title:'CY2027 Final Rule Deep Dive', desc:'Pam Harrison walks through every confirmed rule change and what agents need to do before October 1.'},
+    ]},
+  { id:'compliance', nav:'Compliance', num:'Section 02', title:'Compliance Corner',
+    lead:'Everything you need to run a compliant Medicare sales practice through AEP and beyond — sourced from CMS MCMG.',
+    docs:[
+      {type:'Template', title:'SOA Templates — CY2027 Updated', desc:'CMS-compliant Scope of Appointment templates for in-person, phone, and virtual appointments.', cta:'Download'},
+      {type:'Checklist', title:'AEP Compliance Checklist — Field Ready', desc:"Print-ready checklist for AEP season: SOA, event rules, marketing dos and don'ts, post-enrollment requirements.", cta:'Download'},
+      {type:'Reference', title:'TPMO Disclaimer Reference Guide', desc:'When and where to include TPMO disclaimers across marketing materials, phone calls, websites, and events.', cta:'Download'},
+      {type:'Guide', title:'Marketing Materials Approval Guide', desc:"Step-by-step process for carrier approval before AEP — timelines, what's required, and common rejections.", cta:'Download'},
+    ],
+    docs:[
+      {type:'Template', title:'SOA Templates — CY2027 Updated', desc:'CMS-compliant Scope of Appointment templates for in-person, phone, and virtual appointments.', cta:'Download'},
+      {type:'Checklist', title:'AEP Compliance Checklist — Field Ready', desc:"Print-ready checklist for AEP season: SOA, event rules, marketing dos and don'ts, post-enrollment requirements.", cta:'Download'},
+      {type:'Reference', title:'TPMO Disclaimer Reference Guide', desc:'When and where to include TPMO disclaimers across marketing materials, phone calls, websites, and events.', cta:'Download'},
+      {type:'Guide', title:'Marketing Materials Approval Guide', desc:"Step-by-step process for carrier approval before AEP — timelines, what's required, and common rejections.", cta:'Download'},
+    ],
+    ccPanels:[
+      {
+        week:'Week 1', title:'Scope of Appointment', desc:'SOA requirements, the 48-hour rule, PTC expiration, and what\'s changing October 1.',
+        flag:'upd', flagText:'Updated',
+        body:`
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h2M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></div><h3>What is a Scope of Appointment?</h3></div>
+            <div class="cc-card"><p>A Scope of Appointment (SOA) is a written agreement documenting which types of Medicare plans a beneficiary has consented to discuss during a marketing appointment. It must be in place before any sales meeting, whether conducted in person or over the phone.</p><p>The SOA defines the boundaries of the conversation. If it shifts into plan types not listed on the SOA, you must stop and collect a new one before continuing.</p></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><h3>The 48-Hour Rule</h3></div>
+            <div class="cc-card"><p>Currently, there must be at least 48 hours between when a beneficiary completes an SOA and when the scheduled marketing appointment takes place.</p><p>Two exceptions apply:</p><ul class="cc-list-items"><li>Walk-in appointments initiated by the beneficiary without a prior scheduled meeting</li><li>When a beneficiary is in the last 4 days of a valid enrollment period</li></ul><div class="cc-note"><strong>Inbound calls:</strong> For inbound calls that become sales calls, the 48-hour wait does not apply — but you must still obtain a verbal SOA on the recorded line before discussing specific plans.</div></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg></div><h3>SOA Validity and Storage</h3></div>
+            <div class="cc-card"><p>SOAs are valid for 12 months from the date of the beneficiary's signature or verbal agreement. Do not use SOAs older than 12 months.</p><p>Keep all SOAs on file — even those where no sale resulted. If a complaint is ever filed, you must be able to produce both the SOA and the call recording.</p></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>Permission to Contact Expiration</h3></div>
+            <div class="cc-card"><table class="cc-table"><thead><tr><th>Product Line</th><th>PTC Expiration Window</th></tr></thead><tbody><tr><td>Medicare Advantage &amp; Part D leads</td><td>12 months from signature date</td></tr><tr><td>Medicare Supplement leads</td><td>12 months from signature date</td></tr><tr><td>Business Reply Cards (BRCs)</td><td>12 months, or when the collection purpose has been served — whichever comes first</td></tr></tbody></table><p style="margin-top:12px;font-size:12.5px;color:var(--faint);font-style:italic;">After expiration, you must re-establish PTC before making outbound contact, even if you have had prior conversations with that individual.</p></div>
+          </div>
+          <div class="cc-update"><span class="cc-update-tag">CY2027 Update</span><h4>48-Hour Wait Eliminated — Effective October 1, 2026</h4><p>The mandatory 48-hour waiting period between SOA completion and a marketing appointment is being eliminated. The SOA itself is still required — but same-day SOA and same-day appointment will be permitted starting October 1, 2026 for discussing PY2027 plans.</p><p>Update your intake and scheduling workflows before October 1, 2026.</p></div>
+        `
+      },
+      {
+        week:'Week 2', title:'Call Recording Requirements', desc:'Which calls must be recorded, retention requirements, and what\'s changing October 1.',
+        body:`
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div><h3>Which Calls Must Be Recorded</h3></div>
+            <div class="cc-card"><p>All sales, marketing (including retention marketing), and enrollment calls — inbound and outbound — must be recorded in their entirety. This includes video calls.</p><p>Examples of calls that require recording:</p><ul class="cc-list-items"><li>Introductory calls where you educate a prospect about Medicare Advantage or Part D options</li><li>Follow-up calls when a beneficiary is making an enrollment decision</li><li>Post-enrollment retention calls aimed at keeping a client enrolled</li><li>Any call where plan benefits, costs, or options are discussed</li></ul><div class="cc-note"><strong>Critical rule:</strong> You cannot complete an enrollment over the phone if your calls are not being recorded.</div></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div><h3>Which Calls Do Not Need to Be Recorded</h3></div>
+            <div class="cc-card"><p>Calls made solely to schedule an appointment, with no benefits discussion, do not require recording. In-person meetings do not require call recording — they require an SOA instead.</p><p>However, if any phone call shifts into a discussion of plan benefits, costs, or enrollment, recording becomes required from that point forward.</p><div class="cc-note"><strong>Practical standard:</strong> If there is any possibility a call will touch on plan details, record it from the start.</div></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg></div><h3>Retention Requirements</h3></div>
+            <div class="cc-card"><p>All recorded calls must currently be retained for <strong style="color:var(--ink);">10 years</strong>. Recordings must be accessible and retrievable on demand — if a complaint is filed and you cannot produce a specific recording quickly, it is treated the same as not having the recording at all.</p><div class="cc-note"><strong>Before AEP:</strong> Verify that your recording storage system is organized, backed up, and searchable enough to locate a specific call when needed.</div></div>
+          </div>
+          <div class="cc-update"><span class="cc-update-tag">CY2027 Update</span><h4>Retention Reduced to 6 Years — Effective October 1, 2026</h4><p>The 10-year retention requirement is being reduced. Starting October 1, 2026 for 2027 plan enrollments:</p><ul><li>Years 1–3: retain the audio recording</li><li>Years 4–6: retain either the audio recording or a written transcript</li><li>After year 6: no retention is required</li></ul><p>Do not delete any existing recordings retroactively without legal review. Update your data retention policy before October 1, 2026.</p></div>
+        `
+      },
+      {
+        week:'Week 3', title:'Communication vs. Marketing Materials', desc:'How CMS distinguishes communication from marketing, what triggers the approval process, and baseline requirements.',
+        body:`
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h3>What CMS Means by Communication Materials</h3></div>
+            <div class="cc-card"><p>Communication materials are educational and informational in nature. They provide general information about Medicare and coverage options without promoting a specific plan or attempting to influence enrollment decisions.</p><p>Examples of communication materials:</p><ul class="cc-list-items"><li>Explanations of Medicare Parts A, B, C, and D</li><li>General descriptions of how Medicare Advantage works vs. Original Medicare</li><li>Information about Medicare enrollment periods (IEP, AEP, OEP, SEP)</li><li>Descriptions of the services you provide as an agent</li><li>General comparisons of Medicare plan types without naming specific plans or carriers</li></ul><div class="cc-note"><strong>Note:</strong> Communication materials must be accurate and not misleading, but they do not require the full carrier and CMS marketing approval process.</div></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h3>What Crosses the Line into Marketing</h3></div>
+            <div class="cc-card"><p>The moment a piece of content meets either of the following criteria, it is classified as marketing and requires CMS approval before use:</p><ol class="cc-ol"><li><span class="cc-ol-num">1</span><div><strong>Intent to influence enrollment</strong> — The material is designed to draw a beneficiary toward a specific plan or carrier.</div></li><li><span class="cc-ol-num">2</span><div><strong>Mentions plan benefits</strong> — The material references any specific benefit: dental, vision, hearing, transportation, meal benefits, OTC allowances, premium reductions, cost savings, or star ratings.</div></li></ol><div class="cc-note"><strong>Important:</strong> A piece does not need to name a specific plan to be classified as marketing. Generic benefit mentions trigger the requirement. The test is content and intent, not format.</div></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><h3>Minimum CMS Requirements for All Materials</h3></div>
+            <div class="cc-card"><p>All materials — whether classified as communication or marketing — must meet CMS baseline requirements:</p><table class="cc-req-table"><thead><tr><th>Requirement</th><th>Detail</th></tr></thead><tbody><tr><td>No misleading content</td><td>Must not mislead or confuse beneficiaries with words, symbols, or imagery</td></tr><tr><td>No government endorsement</td><td>Must not imply government endorsement, approval, or affiliation</td></tr><tr><td>Agent contact information</td><td>Must include accurate and compliant agent contact information</td></tr><tr><td>Approved agent titles</td><td>Licensed Insurance Agent, Licensed Sales Agent, Licensed Sales Representative, Sales Agent, or Sales Representative</td></tr><tr><td>Required disclaimers</td><td>Must include required disclaimers where applicable</td></tr></tbody></table></div>
+          </div>
+        `
+      },
+    ]},
+  { id:'leadgen', nav:'Lead Gen', num:'Section 03', title:'Lead Generation',
+    lead:'Guides, templates, and training to build and work a lead pipeline heading into AEP.',
+    vids:[
+      {format:'Video', dur:'~48 min', title:'Hosting a CMS-Compliant Educational Event', desc:'How to plan and run an educational event that fills your pipeline without crossing compliance lines.'},
+      {format:'Video', dur:'~42 min', title:'Social Media Marketing for Medicare Agents', desc:'Organic and paid social strategies that work — compliant content, real results, platform-by-platform guidance.'},
+      {format:'Roundtable', dur:'~48 min', title:'Scaling from 100 → 500 Clients', desc:'Agents and advisors on scaling a Medicare book while maintaining service quality and client satisfaction.'},
+    ],
+    docs:[
+      {type:'Template', flag:'new', flagText:'New', title:'AEP Client Email Campaign — 4-Email Series', desc:'Ready-to-send plan review outreach with compliant copy, customizable subject lines, and timing guidance.', cta:'Access'},
+      {type:'Template', flag:'new', flagText:'New', title:'AEP Social Post Series — 8 Posts', desc:'Compliant Facebook and LinkedIn posts covering AEP open dates, reminders, and enrollment deadlines.', cta:'Access'},
+      {type:'PDF', title:'Pre-Approved Outreach Scripts', desc:'CMS-compliant scripts for calling leads, following up, and confirming appointments through AEP.', cta:'Download'},
+      {type:'Playbook', title:'Community Partnerships Playbook', desc:'How to build referral relationships with senior centers, pharmacies, and community organizations.', cta:'Download'},
+    ]},
+  { id:'enrollment', nav:'Enrollment', num:'Section 04', title:'Enrollment',
+    lead:'Tools and training to help you compare plans, identify the right products, and enroll clients efficiently and compliantly.',
+    docs:[
+      {type:'Tool', title:'Plan Cheatsheets', desc:'Compare MA, MAPD, and PDP plans by state and county — premiums, MOOPs, dental, vision, and Rx formulary.', cta:'Open'},
+      {type:'One-pager', title:'C-SNP Plans in 2027', desc:'Qualifying conditions, year-round SEP, enrollment verification, and finding C-SNP opportunities.', cta:'Download'},
+      {type:'Guide', flag:'new', flagText:'New', title:'Running Virtual Enrollments', desc:'Compliant, efficient virtual Medicare enrollments — tools, workflow, and best practices for remote sales.', cta:'Access'},
+    ],
+    vids:[
+      {format:'Video', dur:'~38 min', title:'Understanding Extra Help / LIS', desc:'How Low Income Subsidy works, who qualifies, and how to serve LIS clients during AEP.'},
+      {format:'Video', dur:'~44 min', title:'Understanding C-SNPs', desc:'Everything agents need to identify, pitch, and enroll clients in Chronic Special Needs Plans year-round.'},
+      {format:'Video', dur:'~46 min', title:'Understanding Dual Eligible Plans (D-SNP)', desc:'How D-SNPs work, who qualifies, and how to identify and serve dual-eligible clients.'},
+    ]},
+  { id:'crosssell', nav:'Cross-Sell', num:'Section 05', title:'Cross-Sell',
+    lead:'Introduce ancillary products naturally and serve clients beyond their Medicare plan.',
+    docs:[
+      {type:'PDF', title:'Cross-Sell Conversation Starters', desc:'Scripted openers for introducing ancillary products naturally into Medicare plan review conversations.', cta:'Download'},
+    ],
+    vids:[
+      {format:'Roundtable', dur:'~55 min', title:'Serving Clients Beyond Medicare', desc:'Jesse Hendon, Veronica Neal, Brent Crawley, and Michael Henderson on ancillary strategies and cross-sell.'},
+      {format:'Video', dur:'~38 min', title:'Selling Hospital Indemnity', desc:'How to identify ideal candidates, present the value, and close hospital indemnity alongside MA plans.'},
+      {format:'Video', dur:'~44 min', title:'Critical Illness & CHAS Ancillaries', desc:'How to present and sell critical illness and CHAS ancillary products alongside Medicare plans.'},
+    ]},
+  { id:'retention', nav:'Retention', num:'Section 06', title:'Client Retention',
+    lead:'Keep the clients you enroll — scripts and plans for the post-AEP window that reduce disenrollment.',
+    docs:[
+      {type:'PDF', title:'30–60 Day Retention Call Scripts', desc:'Proven scripts for the critical 30–60 day post-enrollment window — catch issues early and keep clients.', cta:'Download'},
+      {type:'Guide', title:'30-60 Plan: Post-AEP Client Nurture', desc:'What to do in the 30 and 60 days after enrollment to reduce disenrollment and build referral momentum into Q1.', cta:'Download'},
+      {type:'Script', flag:'new', flagText:'New', title:'Annual Plan Review Call Script', desc:'Word-for-word script for proactive plan review calls with existing clients — handles objections, surfaces cross-sells.', cta:'Access'},
+    ]},
+  { id:'huddle', nav:'Huddle Series', num:'Section 07', title:'Community Huddle Series',
+    lead:'A live weekly series for independent agents — fundamentals, lead gen, compliance, and retention through AEP.',
+    events:[
+      {n:'01', title:'Medicare Fundamentals — What Agents Need to Know for 2027', when:'Tuesday, July 14 · 2:30pm ET · Goldcast', status:'Open', cta:'Register →'},
+      {n:'02', title:'Lead Generation Strategies for AEP Season', when:'Tuesday, July 21 · 2:30pm ET · Goldcast', status:'Open', cta:'Register →'},
+      {n:'03', title:'Grassroots Marketing That Actually Works', when:'Tuesday, July 28 · 2:30pm ET · Goldcast', status:'Upcoming', cta:'Notify Me'},
+      {n:'04', title:'Client Retention and Reducing Disenrollment', when:'Tuesday, August 4 · 2:30pm ET · Goldcast', status:'Upcoming', cta:'Notify Me'},
+      {n:'05', title:'Running AEP Events That Drive Enrollments', when:'Tuesday, August 11 · 2:30pm ET · Goldcast', status:'Upcoming', cta:'Notify Me'},
+      {n:'06', title:'Social Media Marketing for Medicare Agents', when:'Tuesday, August 18 · 2:30pm ET · Goldcast', status:'Upcoming', cta:'Notify Me'},
+      {n:'07', title:"CMS Compliance for AEP — What Changed, What Didn't", when:'Tuesday, August 25 · 2:30pm ET · Goldcast', status:'Upcoming', cta:'Notify Me'},
+    ]},
+];
+
+const CHEV='<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>';
+const PLAY='<svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>';
+const ARR='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const kw=s=>s.toLowerCase();
+
+/* status flag only (New / Updated) — no more type/format pill inside cards */
+const flagPill=item=>{
+  if(item.flag) return `<span class="pill ${item.flag}">${item.flagText||'New'}</span>`;
+  if(item.flagText && item.flagText!=='Existing') return `<span class="pill upd">${item.flagText}</span>`;
+  return '';
+};
+/* type as plain-text eyebrow (no box), New/Updated flag inline beside it */
+const typeEyebrow=(label,item)=>{
+  const f=flagPill(item);
+  return `<div class="type-row"><span class="type-label">${label}</span>${f}</div>`;
+};
+const docCard=d=>`<a class="doc" href="#" data-text="${kw(d.title+' '+d.desc+' '+d.type)}">
+  ${typeEyebrow(d.type,d)}<h3>${d.title}</h3><p>${d.desc}</p>
+  <span class="go">${d.cta||'Open'} ${ARR}</span></a>`;
+const vidCard=v=>`<a class="vid" href="#" data-text="${kw(v.title+' '+v.desc+' '+v.format)}">
+  <div class="thumb"><span class="play">${PLAY}</span><span class="dur">${v.dur}</span></div>
+  <div class="vid-body">${typeEyebrow(v.format,v)}<h3>${v.title}</h3><p>${v.desc}</p></div></a>`;
+const newsRow=n=>`<div class="news-row" data-text="${kw(n.title+' '+n.desc+' '+n.fmt)}">
+  <div class="nfmt">${n.fmt}</div>
+  <div class="ncontent"><div class="ntitle">${n.title}</div><div class="ndesc">${n.desc}</div></div>
+  <div class="nright">${flagPill(n)}<span class="nbtn">${n.cta}</span></div>
+</div>`;
+const eventRow=e=>`<div class="ev" data-text="${kw(e.title+' '+e.when)}">
+  <div class="enum">${e.n}</div>
+  <div class="ebody"><div class="etitle">${e.title}</div><div class="ewhen">${e.when}</div></div>
+  <div class="eright"><span class="pill ${e.status==='Open'?'new':'upd'}">${e.status}</span><span class="ebtn">${e.cta}</span></div>
+</div>`;
+
+const CHEV_SM='<svg class="cc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>';
+const ccPanel=p=>{
+  const f=p.flag?`<span class="pill ${p.flag}">${p.flagText||'New'}</span>`:
+            (p.flagText&&p.flagText!=='Existing')?`<span class="pill upd">${p.flagText}</span>`:'';
+  return `<div class="cc-panel" data-text="${kw(p.week+' '+p.title+' '+p.desc)}">
+    <button class="cc-panel-head" onclick="this.closest('.cc-panel').classList.toggle('open')">
+      <span class="cc-week-badge">${p.week}</span>
+      <span class="cc-panel-title">${p.title}</span>
+      <span class="cc-panel-meta">${f}<span class="cc-panel-desc">${p.desc}</span>${CHEV_SM}</span>
+    </button>
+    <div class="cc-panel-body">${p.body}</div>
+  </div>`;
+};
+
+const main=document.getElementById('main');
+const tabs=document.getElementById('tabs');
+const TAB_ARROW='<span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
+
+SECTIONS.forEach((sec,i)=>{
+  const count=(sec.docs?.length||0)+(sec.vids?.length||0)+(sec.news?.length||0)+(sec.events?.length||0)+(sec.ccPanels?.length||0);
+  const navLabel=sec.nav||sec.title.replace(' — start here','');
+  tabs.insertAdjacentHTML('beforeend',
+    `<button class="tab" data-go="${sec.id}"><span class="tab-label">${navLabel}</span>${TAB_ARROW}</button>`);
+
+  let body='';
+  if(sec.vids){ body+=`<div class="subhead">Training & roundtables</div><div class="grid">${sec.vids.map(vidCard).join('')}</div>`; }
+  if(sec.docs){ body+=`<div class="subhead">Guides, templates & tools</div><div class="grid">${sec.docs.map(docCard).join('')}</div>`; }
+  if(sec.news){ body+=`<div class="subhead">Industry news & rule changes</div><div class="news-list">${sec.news.map(newsRow).join('')}</div>`; }
+  if(sec.ccPanels){ body+=`<div class="subhead">Compliance Corner — weekly guides</div><div class="cc-list">${sec.ccPanels.map(ccPanel).join('')}</div>`; }
+  if(sec.events){ body+=`<div class="schedule">${sec.events.map(eventRow).join('')}</div>`; }
+
+  main.insertAdjacentHTML('beforeend',
+    `<section class="section${i===0?' open':''}" id="${sec.id}">
+       <button class="sec-head">
+         <div><h2>${sec.title}</h2><p class="lead">${sec.lead}</p></div>
+         <div class="meta"><span class="sec-count">${count} resources</span>${CHEV}</div>
+       </button>
+       <div class="sec-body">${body}</div>
+     </section>`);
+});
+
+/* accordion toggle */
+document.querySelectorAll('.sec-head').forEach(h=>{
+  h.addEventListener('click',()=>h.closest('.section').classList.toggle('open'));
+});
+
+/* keep the sticky stage bar flush under the (variable-height) top bar — kills the scroll gap */
+const topbarEl=document.querySelector('.topbar'), stagebarEl=document.querySelector('.stagebar');
+function syncChrome(){ document.documentElement.style.setProperty('--topbar-h', topbarEl.offsetHeight+'px'); }
+syncChrome(); window.addEventListener('resize',syncChrome); window.addEventListener('load',syncChrome);
+
+/* stage tabs — click + scroll-spy; active chip fills (Spark arrow-chip style) */
+const tabEls=[...tabs.querySelectorAll('.tab')];
+const stickyH=()=>topbarEl.offsetHeight + stagebarEl.offsetHeight;
+let suppressSpy=false;
+function setActive(id){
+  let active=null;
+  tabEls.forEach(t=>{const on=t.dataset.go===id;t.classList.toggle('active',on);if(on)active=t;});
+  if(active){ // horizontal-only nudge so the active chip stays visible on overflow — never scroll the page
+    const r=active.getBoundingClientRect(), pr=tabs.getBoundingClientRect();
+    if(r.left<pr.left) tabs.scrollLeft-=(pr.left-r.left)+16;
+    else if(r.right>pr.right) tabs.scrollLeft+=(r.right-pr.right)+16;
+  }
+}
+tabEls.forEach(t=>{
+  t.addEventListener('click',()=>{
+    const s=document.getElementById(t.dataset.go);
+    s.classList.add('open');           // expand first
+    setActive(t.dataset.go);           // mark active (no page scroll)
+    suppressSpy=true;                  // don't let scroll-spy override during the animated scroll
+    requestAnimationFrame(()=>{        // measure AFTER reflow from expanding
+      const y=s.getBoundingClientRect().top+window.scrollY-stickyH()-12;
+      window.scrollTo({top:y,behavior:'smooth'});
+      setTimeout(()=>{suppressSpy=false;},600);
+    });
+  });
+});
+/* scroll-spy — active = the last section whose top has crossed a line just under the nav.
+   Computed in a single rAF-throttled pass; at the absolute page bottom we pin the last
+   section (it can't scroll past the line). Kept deliberately simple — the previous
+   geometry-probing version flickered while sections were still auto-expanding. */
+let spyTick=false;
+function spy(){
+  if(suppressSpy)return;
+  const line=stickyH()+24;
+  const maxScroll=document.body.scrollHeight-window.innerHeight;
+  let cur=0;
+  for(let i=0;i<SECTIONS.length;i++){
+    if(document.getElementById(SECTIONS[i].id).getBoundingClientRect().top<=line) cur=i;
+  }
+  if(window.scrollY>=maxScroll-2) cur=SECTIONS.length-1;   // pin last section at the very bottom
+  setActive(SECTIONS[cur].id);
+}
+window.addEventListener('scroll',()=>{ if(spyTick)return; spyTick=true; requestAnimationFrame(()=>{spy();spyTick=false;}); });
+window.addEventListener('resize',()=>{ syncChrome(); spy(); });
+
+/* progressive reveal — as each section scrolls into view, auto-open it (infinite-scroll feel).
+   Trigger band sits in the UPPER part of the viewport (just below the sticky nav) so it's
+   reachable for EVERY section, including the last ones where there isn't a full screen of
+   page left to scroll. Content expands below the fold, so no jump. We only auto-open. */
+function openSection(sec){
+  if(sec && !sec.classList.contains('open') && !sec.dataset.userClosed){
+    sec.classList.add('open');
+    // a section just changed height — re-evaluate the active nav AFTER the reflow settles,
+    // so the highlight reads stable geometry instead of flickering mid-expand.
+    requestAnimationFrame(()=>requestAnimationFrame(spy));
+  }
+}
+let lastY=window.scrollY;
+const autoOpen=new IntersectionObserver((entries)=>{
+  const goingDown=window.scrollY>=lastY; lastY=window.scrollY;
+  entries.forEach(e=>{ if(e.isIntersecting && goingDown) openSection(e.target.closest('.section')); });
+},{ rootMargin: `-12% 0px -55% 0px` });   // band ~12%–45% down the viewport — high enough for tail sections
+document.querySelectorAll('.section .sec-head').forEach(h=>autoOpen.observe(h));
+
+/* safety net for the final sections: when the page nears the bottom, the last sections may
+   never scroll high enough to hit the band — open any that are at least partly in view. */
+function revealTail(){
+  if(window.innerHeight+window.scrollY < document.body.scrollHeight-4) return; // only at the very bottom
+  SECTIONS.forEach(s=>{
+    const sec=document.getElementById(s.id);
+    if(sec.getBoundingClientRect().top < window.innerHeight) openSection(sec);
+  });
+}
+window.addEventListener('scroll',revealTail,{passive:true});
+
+/* if the user deliberately collapses a section, remember it so we don't re-open on scroll */
+document.querySelectorAll('.sec-head').forEach(h=>{
+  h.addEventListener('click',()=>{
+    const sec=h.closest('.section');
+    if(sec.classList.contains('open')) delete sec.dataset.userClosed;
+    else sec.dataset.userClosed='1';
+  });
+});
+spy();
+
+/* Browse Resources → scroll to first section */
+document.getElementById('browseBtn').addEventListener('click',()=>{
+  const s=document.getElementById(SECTIONS[0].id); s.classList.add('open');
+  window.scrollTo({top:s.getBoundingClientRect().top+window.scrollY-stickyH()-8,behavior:'smooth'});
+});
+
+/* live search across every item (cards, news rows, events) */
+const q=document.getElementById('q'), empty=document.getElementById('empty');
+q.addEventListener('input',()=>{
+  const term=q.value.trim().toLowerCase(); let anyVisible=false;
+  document.querySelectorAll('.section').forEach(sec=>{
+    let has=false;
+    sec.querySelectorAll('[data-text]').forEach(item=>{
+      const m=!term||item.dataset.text.includes(term);
+      item.style.display=m?'':'none'; if(m)has=true;
+    });
+    sec.classList.toggle('no-match',term&&!has);
+    if(has)anyVisible=true;
+    if(term&&has)sec.classList.add('open');
+  });
+  empty.style.display=(term&&!anyVisible)?'block':'none';
+});
+
+/* countdown to Oct 15 */
+(function(){
+  const now=new Date();
+  let target=new Date(now.getFullYear(),9,15,0,0,0);
+  if(target<now) target=new Date(now.getFullYear()+1,9,15,0,0,0);
+  const p=n=>String(n).padStart(2,'0');
+  function tick(){
+    const diff=target-new Date();
+    document.getElementById('d').textContent=Math.floor(diff/864e5);
+    document.getElementById('h').textContent=p(Math.floor(diff%864e5/36e5));
+    document.getElementById('m').textContent=p(Math.floor(diff%36e5/6e4));
+    document.getElementById('s').textContent=p(Math.floor(diff%6e4/1e3));
+  }
+  tick(); setInterval(tick,1000);
+})();
+</script>
+</body>
+</html>
