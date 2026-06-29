@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEP 2027 Resource Hub — IMN & Spark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#131F5B;
+    --blue-tint:#DEE4EE;
+    --blue-tint-50:#EFF1F7;
+    --blue-tint-25:#F7F8FB;
+    --sand:#ECE9E4;
+    --sand-50:#F5F4F1;
+    --sand-25:#FAF9F8;
+    --red:#D4414F;
+    --sage:#979A74;
+    --sage-tint:#E0E1D6;
+    --ink:#000;
+    --grey:#76767F;
+    --faint:#A0A0A8;
+    --line:#E4E2DD;
+    --radius:8px;
+    --radius-sm:5px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;
+    color:var(--ink);background:#fff;line-height:1.15;-webkit-font-smoothing:antialiased;
+  }
+  /* Only H1 is serif (Lora), light. H2 and smaller use the sans (Inter), weight for hierarchy. */
+  h1,.lora{font-family:'Lora',Georgia,'Times New Roman',serif;letter-spacing:-0.02em;line-height:1.05;font-weight:400}
+  h2,h3{font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:500;line-height:1.15;letter-spacing:-0.005em}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:24px;padding:14px 40px;
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand .imn{height:24px;width:auto;display:block}
+  .brand-sep{width:1px;height:20px;background:var(--line);flex:0 0 auto}
+
+  .topbar-right{display:flex;align-items:center;gap:24px}
+  .topbar-search{position:relative;display:flex;align-items:center}
+  .topbar-search svg{position:absolute;left:12px;color:var(--faint)}
+  .topbar-search input{
+    font-family:inherit;font-size:13px;color:var(--ink);width:230px;
+    padding:9px 12px 9px 36px;border:1px solid var(--line);border-radius:var(--radius-sm);
+    background:var(--sand-25);outline:none;transition:border-color .15s ease,width .2s ease;
+  }
+  .topbar-search input::placeholder{color:var(--faint)}
+  .topbar-search input:focus{border-color:var(--blue);width:260px}
+  .topnav{display:flex;gap:24px;font-size:14px;font-weight:500;color:var(--grey)}
+  .topnav a:hover{color:var(--ink)}
+
+  /* ---------- hero ---------- */
+  .hero{max-width:1180px;margin:0 auto;padding:56px 40px 30px;display:grid;grid-template-columns:1.45fr 1fr;gap:48px;align-items:center}
+  .hero h1{font-size:58px;font-weight:400}
+  .hero h1 .dim{color:var(--grey)}
+  .hero p{font-size:15px;color:var(--grey);margin-top:16px;max-width:32em;line-height:1.45}
+  .hero-btns{display:flex;gap:12px;margin-top:26px}
+  .btn{font-size:13px;font-weight:600;padding:11px 18px;border-radius:var(--radius-sm);cursor:pointer;font-family:inherit;border:1px solid var(--blue)}
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-ghost{background:#fff;color:var(--blue)}
+  .countdown{background:var(--blue);border-radius:var(--radius);color:#fff;padding:30px 32px}
+  .countdown .label{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue-tint);font-weight:500}
+  .cd-row{display:flex;gap:26px;margin-top:24px}
+  .cd-unit{display:flex;flex-direction:column;align-items:flex-start}
+  .cd-num{font-family:'Lora',serif;font-size:38px;line-height:1;font-weight:400}
+  .cd-tag{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue-tint);margin-top:9px}
+  .cd-foot{margin-top:26px;padding-top:20px;border-top:1px solid rgba(255,255,255,.18)}
+  .cd-foot .k{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--blue-tint)}
+  .cd-foot .v{font-size:13px;font-weight:500;margin-top:3px}
+
+  /* ---------- sticky stage nav — Spark-style arrow chips ---------- */
+  .stagebar{position:sticky;top:var(--topbar-h,55px);z-index:40;background:#fff;border-bottom:1px solid var(--line)}
+  .stagebar-inner{max-width:1180px;margin:0 auto;padding:14px 40px}
+  .tabs{display:flex;gap:7px;position:relative;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{
+    display:flex;align-items:center;gap:9px;flex:0 0 auto;
+    font-size:16px;font-weight:500;color:var(--ink);background:var(--blue-tint-50);
+    border:1px solid transparent;border-radius:99px;cursor:pointer;
+    padding:7px 7px 7px 16px;font-family:inherit;white-space:nowrap;transition:background .18s ease,border-color .18s ease;
+  }
+  .tab:hover{background:var(--blue-tint);border-color:transparent}
+  .tab .ct{display:none}  /* counts hidden in chip style — keep the chip clean */
+  .tab .arrow{
+    flex:0 0 auto;width:30px;height:30px;border-radius:99px;background:#fff;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--ink);
+    transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease;
+  }
+  .tab .arrow svg{width:15px;height:15px;transition:transform .18s ease}
+  .tab:hover .arrow{background:var(--blue);border-color:var(--blue);color:#fff}
+  .tab:hover .arrow svg{transform:translateX(2px)}
+  .tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
+  .tab.active .arrow{background:#fff;border-color:#fff;color:var(--blue)}
+
+  /* ---------- sections (accordion) ---------- */
+  main{max-width:1180px;margin:0 auto;padding:8px 40px 80px}
+  .section{border-top:1px solid var(--line);padding:6px 0}
+  .section:first-child{border-top:none}
+  .sec-head{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:24px;
+    padding:32px 0 4px;cursor:pointer;user-select:none;width:100%;text-align:left;background:none;border:none;font-family:inherit;
+  }
+  .sec-num{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--faint);font-weight:600;margin-bottom:8px}
+  .sec-head h2{font-size:30px;font-weight:400;letter-spacing:-0.015em}
+  .sec-head .meta{display:flex;align-items:center;gap:16px;flex:0 0 auto;padding-top:4px}
+  .sec-head .lead{font-size:13px;color:var(--grey);max-width:40em;line-height:1.45;margin:9px 0 0;font-weight:400}
+  .sec-count{font-size:12px;color:var(--faint);font-weight:500}
+  .chev{transition:transform .25s ease;color:var(--grey)}
+  .section.open .chev{transform:rotate(180deg)}
+  .sec-body{display:none;padding:22px 0 32px}
+  .section.open .sec-body{display:block}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .subhead{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--grey);font-weight:600;margin:30px 0 16px}
+  .subhead:first-child{margin-top:0}
+
+  /* type label as plain text eyebrow (no box) + small status flag */
+  .type-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .type-label{font-size:10px;text-transform:uppercase;letter-spacing:0.09em;font-weight:600;color:var(--grey)}
+  .pill-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pill{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;font-weight:600;color:var(--blue);background:#fff;border:1px solid var(--line);padding:3px 8px;border-radius:var(--radius-sm)}
+  .pill.new{background:var(--sage);color:#fff;border-color:var(--sage)}      /* Sage, not red */
+  .pill.upd{background:var(--sage-tint);color:#56583f;border-color:var(--sage-tint)}
+
+  /* document card */
+  .doc{display:flex;flex-direction:column;gap:10px;background:var(--sand-50);border-radius:var(--radius);padding:20px 20px 18px;border:1px solid transparent;transition:border-color .15s ease;min-height:158px}
+  .doc:hover{border-color:var(--blue)}
+  .doc h3{font-size:16px;font-weight:500;line-height:1.25;margin-top:2px;letter-spacing:-0.005em}
+  .doc p{font-size:12.5px;color:var(--grey);line-height:1.4;flex:1}
+  .doc .go{font-size:12px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:6px;margin-top:4px}
+
+  /* video card */
+  .vid{display:flex;flex-direction:column;background:var(--blue-tint);border-radius:var(--radius);overflow:hidden;border:1px solid transparent;transition:border-color .15s ease}
+  .vid:hover{border-color:var(--blue)}
+  .thumb{aspect-ratio:16/9;background:var(--blue);position:relative;display:flex;align-items:center;justify-content:center}
+  .thumb .play{width:46px;height:46px;border-radius:99px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center}
+  .thumb .dur{position:absolute;bottom:10px;right:10px;font-size:11px;font-weight:500;color:#fff;background:rgba(0,0,0,.45);padding:3px 7px;border-radius:var(--radius-sm)}
+  .vid-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px}
+  .vid h3{font-size:15px;font-weight:500;line-height:1.25;letter-spacing:-0.005em}
+  .vid p{font-size:12.5px;color:var(--grey);line-height:1.4}
+
+  /* industry-news rows (Compliance) */
+  .news-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .news-row{display:flex;align-items:center;gap:20px;padding:16px 20px;border-top:1px solid var(--line);cursor:pointer;background:#fff;transition:background .15s ease}
+  .news-row:first-child{border-top:none}
+  .news-row:hover{background:var(--sand-25)}
+  .news-row .nfmt{flex:0 0 84px;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;font-weight:600;color:var(--blue)}
+  .news-row .ncontent{flex:1}
+  .news-row .ntitle{font-size:15px;font-weight:500;line-height:1.25;letter-spacing:-0.005em}
+  .news-row .ndesc{font-size:12.5px;color:var(--grey);margin-top:4px;line-height:1.4}
+  .news-row .nright{flex:0 0 auto;display:flex;align-items:center;gap:14px}
+  .news-row .nbtn{font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap}
+
+  /* huddle schedule (numbered) */
+  .schedule{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .ev{display:flex;align-items:center;gap:22px;padding:18px 22px;border-top:1px solid var(--line);cursor:pointer;transition:background .15s ease}
+  .ev:first-child{border-top:none}
+  .ev:hover{background:var(--sand-25)}
+  .ev .enum{flex:0 0 auto;font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:22px;font-weight:400;color:var(--blue);width:34px}
+  .ev .ebody{flex:1}
+  .ev .etitle{font-size:15px;font-weight:500;line-height:1.25;letter-spacing:-0.005em}
+  .ev .ewhen{font-size:12px;color:var(--grey);margin-top:4px}
+  .ev .eright{flex:0 0 auto;display:flex;align-items:center;gap:14px}
+  .ev .ebtn{font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap}
+
+  .empty{display:none;padding:40px 0;color:var(--faint);font-size:14px}
+  .section.no-match{display:none}
+
+  /* ---------- Compliance Corner native panels ---------- */
+  .cc-list{display:flex;flex-direction:column;gap:12px}
+  .cc-panel{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .cc-panel-head{
+    display:flex;align-items:center;gap:16px;padding:16px 20px;cursor:pointer;
+    background:#fff;border:none;width:100%;text-align:left;font-family:inherit;
+    transition:background .15s ease;
+  }
+  .cc-panel-head:hover{background:var(--sand-25)}
+  .cc-panel.open .cc-panel-head{background:var(--blue-tint-25)}
+  .cc-week-badge{
+    flex:0 0 auto;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--blue);background:var(--blue-tint-50);border:1px solid var(--blue-tint);
+    padding:3px 9px;border-radius:99px;white-space:nowrap;
+  }
+  .cc-panel-title{flex:1;font-size:15px;font-weight:500;line-height:1.25;letter-spacing:-0.005em;color:var(--ink)}
+  .cc-panel-meta{flex:0 0 auto;display:flex;align-items:center;gap:12px}
+  .cc-panel-desc{font-size:12.5px;color:var(--grey)}
+  .cc-chevron{color:var(--grey);transition:transform .22s ease;flex:0 0 auto}
+  .cc-panel.open .cc-chevron{transform:rotate(180deg)}
+  .cc-panel-body{display:none;padding:24px 20px 28px;border-top:1px solid var(--line);background:#fff}
+  .cc-panel.open .cc-panel-body{display:block}
+
+  /* inside the panel — Compliance Corner content styles */
+  .cc-panel-body .cc-section{margin-bottom:28px}
+  .cc-panel-body .cc-sh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .cc-panel-body .cc-sh-icon{
+    width:30px;height:30px;border-radius:7px;background:var(--blue);flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .cc-panel-body .cc-sh-icon svg{width:14px;height:14px;fill:none;stroke:#dce2ff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .cc-panel-body .cc-sh h3{font-size:16px;font-weight:500;color:var(--blue);letter-spacing:-0.005em}
+  .cc-panel-body .cc-card{background:var(--sand-50);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px}
+  .cc-panel-body .cc-card p{font-size:13.5px;color:var(--grey);line-height:1.7}
+  .cc-panel-body .cc-card p+p{margin-top:10px}
+  .cc-panel-body .cc-note{
+    margin-top:14px;background:var(--blue-tint-50);border-left:3px solid var(--blue);
+    border-radius:0 6px 6px 0;padding:11px 14px;font-size:13px;color:var(--grey);line-height:1.6;
+  }
+  .cc-panel-body .cc-note strong{color:var(--ink)}
+  .cc-panel-body .cc-list-items{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:7px}
+  .cc-panel-body .cc-list-items li{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;color:var(--grey);line-height:1.6}
+  .cc-panel-body .cc-list-items li::before{content:'';display:inline-block;flex-shrink:0;margin-top:7px;width:5px;height:5px;border-radius:50%;background:var(--blue)}
+  .cc-panel-body .cc-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  .cc-panel-body .cc-table thead th{background:var(--blue);color:#dce2ff;font-weight:600;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;padding:9px 14px;text-align:left}
+  .cc-panel-body .cc-table thead th:first-child{border-radius:6px 0 0 0}
+  .cc-panel-body .cc-table thead th:last-child{border-radius:0 6px 0 0}
+  .cc-panel-body .cc-table tbody tr{border-bottom:1px solid var(--line)}
+  .cc-panel-body .cc-table tbody tr:last-child{border-bottom:none}
+  .cc-panel-body .cc-table tbody tr:hover{background:var(--blue-tint-25)}
+  .cc-panel-body .cc-table td{padding:10px 14px;color:var(--grey);vertical-align:top;font-size:13px}
+  .cc-panel-body .cc-table td:last-child{font-weight:500;color:var(--ink)}
+  .cc-panel-body .cc-update{
+    background:var(--blue-tint-50);border:1px solid var(--blue-tint);border-left:3px solid var(--blue);
+    border-radius:var(--radius);padding:18px 20px;margin-top:20px;
+  }
+  .cc-panel-body .cc-update-tag{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;display:block}
+  .cc-panel-body .cc-update h4{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px;letter-spacing:-0.005em}
+  .cc-panel-body .cc-update p{font-size:13px;color:var(--grey);line-height:1.65}
+  .cc-panel-body .cc-update p+p{margin-top:8px}
+  .cc-panel-body .cc-update ul{margin-top:10px;list-style:none;display:flex;flex-direction:column;gap:6px}
+  .cc-panel-body .cc-update ul li{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--grey);line-height:1.6}
+  .cc-panel-body .cc-update ul li::before{content:'';display:inline-block;flex-shrink:0;margin-top:7px;width:5px;height:5px;border-radius:50%;background:var(--blue)}
+  .cc-panel-body .cc-ol{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:10px}
+  .cc-panel-body .cc-ol li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:var(--grey);line-height:1.6}
+  .cc-panel-body .cc-ol-num{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .cc-panel-body .cc-req-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  .cc-panel-body .cc-req-table thead th{background:var(--blue);color:#dce2ff;font-weight:600;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;padding:9px 14px;text-align:left}
+  .cc-panel-body .cc-req-table thead th:first-child{border-radius:6px 0 0 0}
+  .cc-panel-body .cc-req-table thead th:last-child{border-radius:0 6px 0 0}
+  .cc-panel-body .cc-req-table tbody tr{border-bottom:1px solid var(--line)}
+  .cc-panel-body .cc-req-table tbody tr:last-child{border-bottom:none}
+  .cc-panel-body .cc-req-table td{padding:10px 14px;color:var(--grey);vertical-align:top;font-size:13px}
+  .cc-panel-body .cc-req-table td:first-child{font-weight:500;color:var(--ink);width:35%}
+  .cc-subhead-row{margin:20px 0 10px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.09em;color:var(--grey)}
+  .cc-divider{border:none;border-top:1px solid var(--line);margin:20px 0}
+
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr;padding-top:36px}
+    .hero h1{font-size:40px}
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .topnav{display:none}
+    .hero-right{order:-1}
+  }
+  @media(max-width:600px){
+    .grid{grid-template-columns:1fr}
+    .hero,.stagebar-inner,main{padding-left:20px;padding-right:20px}
+    .news-row,.ev{flex-wrap:wrap}
+    .news-row .nfmt{flex-basis:auto}
+  }
+
+  /* ---------- booklet download banner ---------- */
+  .booklet-banner{
+    background:var(--sand-50);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px 28px;margin-bottom:8px;
+    display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;
+  }
+  .bb-eyebrow{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--grey);margin-bottom:6px}
+  .bb-title{font-family:'Lora',serif;font-size:26px;font-weight:400;color:var(--ink);line-height:1.1;letter-spacing:-0.02em;margin-bottom:6px}
+  .bb-sub{font-size:13px;color:var(--grey);line-height:1.55;max-width:50em}
+  .bb-tags{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+  .bb-tag{font-size:11px;font-weight:500;color:var(--blue);background:#fff;border:1px solid var(--line);border-radius:99px;padding:3px 10px}
+  .bb-actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex:0 0 auto}
+  .bb-btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:600;padding:11px 22px;border-radius:var(--radius-sm);cursor:pointer;white-space:nowrap;border:1px solid var(--blue);text-decoration:none;transition:opacity .15s}
+  .bb-btn:hover{opacity:.85}
+  .bb-btn-primary{background:var(--blue);color:#fff}
+  .bb-btn-ghost{background:#fff;color:var(--blue)}
+  .bb-coming{font-size:11px;color:var(--faint);text-align:center}
+
+  /* ---------- contracting deadlines ---------- */
+  .deadline-section{margin-bottom:8px}
+  .deadline-section-head{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--grey);margin-bottom:14px}
+  .deadline-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .deadline-month{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .dm-head{padding:9px 14px;background:var(--blue);display:flex;align-items:center;justify-content:space-between}
+  .dm-head .month-name{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.09em;color:#fff}
+  .dm-head .month-year{font-size:10px;color:rgba(222,228,238,.75)}
+  .dm-body{padding:6px 0}
+  .deadline-row{display:flex;align-items:flex-start;gap:10px;padding:7px 14px;border-bottom:1px solid var(--line)}
+  .deadline-row:last-child{border-bottom:none}
+  .dl-date{flex:0 0 26px;font-size:17px;font-family:'Lora',serif;color:var(--blue);line-height:1.1;padding-top:1px}
+  .dl-right{flex:1}
+  .dl-label{font-size:12px;font-weight:500;color:var(--ink);line-height:1.35}
+  .dl-note{font-size:11px;color:var(--faint);margin-top:1px}
+  .dl-badge{display:inline-block;font-size:9.5px;font-weight:600;padding:2px 6px;border-radius:3px;margin-top:3px;text-transform:uppercase;letter-spacing:0.04em}
+  .dl-badge.nr{background:#FEF3C7;color:#92400E}
+  .dl-badge.wr{background:#D1FAE5;color:#065F46}
+  .dl-badge.key{background:var(--blue-tint-50);color:var(--blue);border:1px solid var(--blue-tint)}
+
+  /* ---------- Spark exclusive section ---------- */
+  .spark-section{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;background:#fff}
+  .spark-sec-head{padding:20px 24px 16px;display:flex;align-items:flex-start;gap:14px;border-bottom:1px solid var(--line);background:var(--sand-50)}
+  .spark-star-box{flex:0 0 auto;width:32px;height:32px;background:var(--red);border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .spark-star-box svg{width:15px;height:15px;fill:#fff}
+  .spark-sec-title{font-size:16px;font-weight:500;color:var(--ink);letter-spacing:-0.005em;margin-bottom:3px}
+  .spark-sec-sub{font-size:12.5px;color:var(--grey);line-height:1.5}
+  .spark-sec-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px}
+  .spark-feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .spark-feat{background:var(--sand-50);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;transition:border-color .15s}
+  .spark-feat:hover{border-color:var(--blue)}
+  .sf-icon{width:28px;height:28px;border-radius:5px;background:var(--blue-tint-50);border:1px solid var(--blue-tint);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+  .sf-icon svg{width:13px;height:13px;fill:none;stroke:var(--blue);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .sf-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:5px;line-height:1.2}
+  .sf-desc{font-size:12px;color:var(--grey);line-height:1.5}
+  .spark-ntk{background:var(--blue-tint-50);border:1px solid var(--blue-tint);border-radius:var(--radius);padding:18px 20px}
+  .ntk-title{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.09em;color:var(--grey);margin-bottom:12px}
+  .ntk-items{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .ntk-item{display:flex;align-items:flex-start;gap:8px}
+  .ntk-dot{flex:0 0 auto;width:5px;height:5px;border-radius:50%;background:var(--red);margin-top:5px}
+  .ntk-text{font-size:12.5px;color:var(--grey);line-height:1.5}
+  .ntk-text strong{color:var(--ink)}
+  .spark-cta-row{display:flex;gap:10px;flex-wrap:wrap;padding-top:4px}
+  .spark-btn{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:13px;font-weight:600;padding:10px 18px;border-radius:var(--radius-sm);cursor:pointer;border:1px solid var(--blue);text-decoration:none;transition:opacity .15s}
+  .spark-btn:hover{opacity:.85}
+  .spark-btn-primary{background:var(--blue);color:#fff}
+  .spark-btn-ghost{background:#fff;color:var(--blue)}
+
+  /* ---------- top producer plays callout ---------- */
+  .tpp-banner{
+    background:var(--sand-50);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 20px;margin-bottom:4px;
+    display:flex;align-items:center;gap:16px;
+  }
+  .tpp-vert{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--faint);white-space:nowrap;flex:0 0 auto}
+  .tpp-body{flex:1}
+  .tpp-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px}
+  .tpp-desc{font-size:12px;color:var(--grey);line-height:1.5}
+  .tpp-topics{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .tpp-topic{font-size:10.5px;color:var(--blue);background:var(--blue-tint-50);border:1px solid var(--blue-tint);border-radius:99px;padding:2px 9px;font-weight:500}
+  .tpp-action{flex:0 0 auto}
+  .tpp-btn{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:12px;font-weight:600;padding:9px 15px;border-radius:var(--radius-sm);cursor:pointer;background:#fff;border:1px solid var(--line)!important;color:var(--ink);transition:border-color .15s;text-decoration:none}
+  .tpp-btn:hover{border-color:var(--blue)!important}
+
+  /* ---------- event banner (IMN Ignite + Spark Pre-AEP) ---------- */
+  .event-banner{
+    display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;
+  }
+  .ev-card{
+    border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;
+    display:flex;flex-direction:column;gap:8px;background:#fff;position:relative;overflow:hidden;
+    transition:border-color .15s;
+  }
+  .ev-card:hover{border-color:var(--blue)}
+  .ev-card-imn{background:var(--blue-tint-50);border-color:var(--blue-tint)}
+  .ev-card-spark{background:var(--sand-50)}
+  .ev-eyebrow{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--grey);margin-bottom:2px}
+  .ev-title{font-size:17px;font-weight:500;color:var(--ink);letter-spacing:-0.01em;line-height:1.2}
+  .ev-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
+  .ev-pill{font-size:11px;font-weight:500;background:#fff;border:1px solid var(--line);border-radius:99px;padding:3px 10px;color:var(--grey)}
+  .ev-pill.imn-pill{color:var(--blue);border-color:var(--blue-tint);background:var(--blue-tint-50)}
+  .ev-desc{font-size:12.5px;color:var(--grey);line-height:1.5}
+  .ev-cta{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--blue);text-decoration:none;margin-top:4px;border:none;background:none;cursor:pointer;font-family:inherit;padding:0;transition:opacity .15s}
+  .ev-cta:hover{opacity:.75}
+  .ev-spark-badge{position:absolute;top:16px;right:18px;width:28px;height:28px;background:var(--red);border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .ev-spark-badge svg{width:13px;height:13px;fill:#fff}
+
+  /* ---------- news link rows ---------- */
+  .news-link-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:0}
+  .nl-row{display:flex;align-items:center;gap:20px;padding:16px 20px;background:#fff;transition:background .15s;text-decoration:none}
+  .nl-row:hover{background:var(--sand-25)}
+  .nl-fmt{flex:0 0 90px;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;font-weight:600;color:var(--blue)}
+  .nl-content{flex:1}
+  .nl-title{font-size:15px;font-weight:500;color:var(--ink);letter-spacing:-0.005em}
+  .nl-desc{font-size:12.5px;color:var(--grey);margin-top:4px;line-height:1.4}
+  .nl-cta{flex:0 0 auto;font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap}
+
+  /* ---------- huddle series preview ---------- */
+  .huddle-preview{background:var(--blue-tint-50);border:1px solid var(--blue-tint);border-radius:var(--radius);padding:18px 20px;margin-bottom:0}
+  .hp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+  .hp-title{font-size:13px;font-weight:600;color:var(--ink)}
+  .hp-sub{font-size:12px;color:var(--grey);margin-top:2px}
+  .hp-cta{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--blue);text-decoration:none;white-space:nowrap;border:none;background:none;cursor:pointer;font-family:inherit;padding:0}
+  .hp-rows{display:flex;flex-direction:column;gap:6px}
+  .hp-row{display:flex;align-items:center;gap:14px;padding:8px 12px;background:#fff;border:1px solid var(--line);border-radius:var(--radius-sm);transition:border-color .15s;cursor:pointer}
+  .hp-row:hover{border-color:var(--blue)}
+  .hp-num{flex:0 0 22px;font-size:13px;font-family:'Lora',serif;color:var(--blue)}
+  .hp-info{flex:1}
+  .hp-session{font-size:13px;font-weight:500;color:var(--ink);line-height:1.2}
+  .hp-when{font-size:11.5px;color:var(--grey);margin-top:2px}
+  .hp-status{flex:0 0 auto;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:3px 8px;border-radius:99px}
+  .hp-open{background:var(--sage-tint);color:#56583f}
+  .hp-soon{background:var(--blue-tint-50);color:var(--blue);border:1px solid var(--blue-tint)}
+
+  /* ---------- spark for agents block ---------- */
+  .spark-block{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;margin-bottom:0}
+  .sb-head{padding:18px 22px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);background:var(--sand-50)}
+  .sb-star{flex:0 0 auto;width:28px;height:28px;background:var(--red);border-radius:5px;display:flex;align-items:center;justify-content:center}
+  .sb-star svg{width:13px;height:13px;fill:#fff}
+  .sb-title{font-size:14px;font-weight:600;color:var(--ink)}
+  .sb-sub{font-size:12px;color:var(--grey);margin-top:1px}
+  .sb-body{padding:16px 22px 20px;display:flex;flex-direction:column;gap:12px}
+  .sb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .sb-feat{background:var(--sand-50);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;transition:border-color .15s}
+  .sb-feat:hover{border-color:var(--blue)}
+  .sb-feat-icon{width:24px;height:24px;border-radius:4px;background:var(--blue-tint-50);border:1px solid var(--blue-tint);display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+  .sb-feat-icon svg{width:12px;height:12px;fill:none;stroke:var(--blue);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .sb-feat-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:3px}
+  .sb-feat-desc{font-size:11px;color:var(--grey);line-height:1.45}
+  .sb-kickoff{background:var(--blue-tint-50);border:1px solid var(--blue-tint);border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:center;gap:16px}
+  .sk-icon{flex:0 0 auto;width:32px;height:32px;border-radius:6px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+  .sk-icon svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round}
+  .sk-text{flex:1}
+  .sk-title{font-size:13px;font-weight:600;color:var(--ink)}
+  .sk-desc{font-size:12px;color:var(--grey);margin-top:2px;line-height:1.4}
+  .sk-cta{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--blue);text-decoration:none;border:none;background:none;cursor:pointer;font-family:inherit;padding:0}
+
+  /* tools grid (same as doc card) */
+  .tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="imn" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTA2NCIgaGVpZ2h0PSIxOTIiIHZpZXdCb3g9IjAgMCAxMDY0IDE5MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTYyLjg5OTUgMzIuNTY3MVYwLjU4NDI1OUg4Ni4zNTM2VjMyLjU2NzFDODYuMzUzNiA2My43NzI4IDYxLjA1NjMgODkuMDcgMjkuODUwNiA4OS4wN0gwVjY1LjYxNkgyOS44NTA2QzQ4LjEwMyA2NS42MTYgNjIuODk5NSA1MC44MTk1IDYyLjg5OTUgMzIuNTY3MVoiIGZpbGw9IiMxMzFGNUIiLz4KPHBhdGggZD0iTTEyNC43MzMgMzIuNTY3MlYwLjU4NDQxMkgxMDEuMjc5VjMyLjU2NzJDMTAxLjI3OSA2My43NzI5IDEyNi41NzYgODkuMDcwMiAxNTcuNzgyIDg5LjA3MDJIMTg3LjYzM1Y2NS42MTYxSDE1Ny43ODJDMTM5LjUzIDY1LjYxNjEgMTI0LjczMyA1MC44MTk2IDEyNC43MzMgMzIuNTY3MloiIGZpbGw9IiMxMzFGNUIiLz4KPHBhdGggZD0iTTYyLjg5OTUgMTU5LjQzM1YxOTEuNDE1SDg2LjM1MzZWMTU5LjQzM0M4Ni4zNTM2IDEyOC4yMjcgNjEuMDU2MyAxMDIuOTMgMjkuODUwNiAxMDIuOTNIMFYxMjYuMzg0SDI5Ljg1MDZDNDguMTAzIDEyNi4zODQgNjIuODk5NSAxNDEuMTggNjIuODk5NSAxNTkuNDMzWiIgZmlsbD0iIzEzMUY1QiIvPgo8cGF0aCBkPSJNMTI0LjczMyAxNTkuNDMzVjE5MS40MTVIMTAxLjI3OVYxNTkuNDMzQzEwMS4yNzkgMTI4LjIyNyAxMjYuNTc2IDEwMi45MyAxNTcuNzgyIDEwMi45M0gxODcuNjMzVjEyNi4zODRIMTU3Ljc4MkMxMzkuNTMgMTI2LjM4NCAxMjQuNzMzIDE0MS4xOCAxMjQuNzMzIDE1OS40MzNaIiBmaWxsPSIjMTMxRjVCIi8+CjxwYXRoIGQ9Ik04MDYuNjE2IDc2Ljg3ODJDODAxLjE4NiA3Ni44NzgyIDc5Ny4wMDMgNzUuNTYxNiA3OTQuMDY4IDcyLjkyODRDNzkxLjEzMiA3MC4yOTUyIDc4OS42NjUgNjUuOTc5NyA3ODkuNjY1IDU5Ljk4MTlWMzIuMjIzN0g3ODEuNDA5VjIyLjQ1OUg3ODkuNjY1VjkuMjkzMDNIODAxLjMzM1YyMi40NTlIODE1LjIwMlYzMi4yMjM3SDgwMS4zMzNWNTkuOTgxOUM4MDEuMzMzIDYyLjc2MTQgODAxLjk1NiA2NC42MjY2IDgwMy4yMDQgNjUuNTc3NEM4MDQuNDUxIDY2LjUyODMgODA2LjM5NiA2Ny4wMDM3IDgwOS4wMzggNjcuMDAzN0g4MTUuMjAyVjc2Ljg3ODJIODA2LjYxNloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik03MjguMTg2IDc2Ljg3ODJWMjIuNDM3NUg3MzkuMzUyTDczOS41NzEgMzAuNDVDNzQxLjM5NiAyNy40NDk5IDc0My45MTQgMjUuMTQ0OSA3NDcuMTI1IDIzLjUzNTFDNzUwLjQxIDIxLjkyNTMgNzUzLjg3NyAyMS4xMjA0IDc1Ny41MjYgMjEuMTIwNEM3NjMuODc2IDIxLjEyMDQgNzY5LjAyMSAyMy4xMzI3IDc3Mi45NjMgMjcuMTU3MkM3NzYuOTA0IDMxLjEwODUgNzc4Ljg3NCAzNy4wMzU1IDc3OC44NzQgNDQuOTM4MlY3Ni44NzgySDc2Ny4yN1Y0Ni4zNjUxQzc2Ny4yNyA0MS40NjI1IDc2Ni4xNzUgMzcuNjk0MSA3NjMuOTg1IDM1LjA1OThDNzYxLjc5NiAzMi4zNTI0IDc1OC41MTEgMzAuOTk4NyA3NTQuMTMyIDMwLjk5ODdDNzQ5LjgyNiAzMC45OTg3IDc0Ni4zNTkgMzIuNDk4OCA3NDMuNzMyIDM1LjQ5ODlDNzQxLjEwNCAzOC40MjU4IDczOS43OSA0Mi40ODY5IDczOS43OSA0Ny42ODIyVjc2Ljg3ODJINzI4LjE4NloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik02OTcuMjU5IDc4LjU2NzhDNjkxLjg4OSA3OC41Njc4IDY4Ny4xNDQgNzcuMzUyNiA2ODMuMDI0IDc0LjkyMjFDNjc4LjkwNSA3Mi40OTE2IDY3NS42NjggNjkuMTAzNyA2NzMuMzE0IDY0Ljc1ODNDNjcxLjAzNCA2MC40MTI5IDY2OS44OTQgNTUuNDQxNSA2NjkuODk0IDQ5Ljg0NDFDNjY5Ljg5NCA0NC4wMjU3IDY3MS4wMzQgMzguOTgwNiA2NzMuMzE0IDM0LjcwODlDNjc1LjU5NSAzMC40MzcyIDY3OC43OTUgMjcuMTIyOSA2ODIuOTE0IDI0Ljc2NjFDNjg3LjEwNyAyMi4zMzU2IDY5MS45MjUgMjEuMTIwNCA2OTcuMzY5IDIxLjEyMDRDNzAyLjY2NSAyMS4xMjA0IDcwNy4zIDIyLjI5ODggNzExLjI3MiAyNC42NTU2QzcxNS4yNDUgMjYuOTM4OCA3MTguMzM0IDMwLjA2ODkgNzIwLjU0MSAzNC4wNDYxQzcyMi44MjEgMzguMDIzMiA3MjMuOTYyIDQyLjU1MjcgNzIzLjk2MiA0Ny42MzQ2QzcyMy45NjIgNDguNjY1NyA3MjMuOTI1IDQ5LjU0OTUgNzIzLjg1MSA1MC4yODZDNzIzLjg1MSA1MS4wMjI1IDcyMy43NzggNTEuOTA2MyA3MjMuNjMxIDUyLjkzNzRINjgxLjU5QzY4MS44MTEgNTYuMDMwNyA2ODIuNTgzIDU4Ljc5MjYgNjgzLjkwNyA2MS4yMjMxQzY4NS4yMzEgNjMuNTc5OSA2ODcuMDM0IDY1LjQ1OCA2ODkuMzE0IDY2Ljg1NzRDNjkxLjU5NCA2OC4xODMxIDY5NC4yMDYgNjguODQ1OSA2OTcuMTQ4IDY4Ljg0NTlDNzAwLjMxMSA2OC44NDU5IDcwMi45OTYgNjguMTQ2MiA3MDUuMjAzIDY2Ljc0NjlDNzA3LjQ4NCA2NS4yNzM5IDcwOS4xNzYgNjMuMjExNyA3MTAuMjc5IDYwLjU2MDJINzIyLjQxN0M3MjEuNDYxIDYzLjg3NDUgNzE5Ljg0MiA2Ni44OTQyIDcxNy41NjIgNjkuNjE5M0M3MTUuMzU1IDcyLjM0NDMgNzEyLjU2IDc0LjUxNyA3MDkuMTc2IDc2LjEzNzNDNzA1Ljc5MiA3Ny43NTc2IDcwMS44MiA3OC41Njc4IDY5Ny4yNTkgNzguNTY3OFpNNjgxLjcgNDQuNjUxN0g3MTIuMDQ1QzcxMS44OTggNDAuMzggNzEwLjM4OSAzNy4wMjg5IDcwNy41MjEgMzQuNTk4NEM3MDQuNjUyIDMyLjA5NDMgNzAxLjE1NyAzMC44NDIzIDY5Ny4wMzggMzAuODQyM0M2OTMuMzYgMzAuODQyMyA2OTAuMDEzIDMxLjk4MzkgNjg2Ljk5NyAzNC4yNjdDNjgzLjk4MSAzNi41NTAyIDY4Mi4yMTUgNDAuMDExOCA2ODEuNyA0NC42NTE3WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTU1MS42MiA3Ni44NzgyVjIyLjQzNzVINTYyLjk3M0w1NjMuMTk1IDMwLjQ1QzU2NS4wNSAyNy40NDk5IDU2Ny42MSAyNS4xNDQ5IDU3MC44NzUgMjMuNTM1MUM1NzQuMjE0IDIxLjkyNTMgNTc3LjczOSAyMS4xMjA0IDU4MS40NDkgMjEuMTIwNEM1ODcuOTA1IDIxLjEyMDQgNTkzLjEzNiAyMy4xMzI3IDU5Ny4xNDMgMjcuMTU3MkM2MDEuMTUgMzEuMTA4NSA2MDMuMTUzIDM3LjAzNTUgNjAzLjE1MyA0NC45MzgyVjc2Ljg3ODJINTkxLjM1NVY0Ni4zNjUxQzU5MS4zNTUgNDEuNDYyNSA1OTAuMjQyIDM3LjY5NDEgNTg4LjAxNiAzNS4wNTk4QzU4NS43OSAzMi4zNTI0IDU4Mi40NTEgMzAuOTk4NyA1NzcuOTk5IDMwLjk5ODdDNTczLjYyMSAzMC45OTg3IDU3MC4wOTYgMzIuNDk4OCA1NjcuNDI1IDM1LjQ5ODlDNTY0Ljc1MyAzOC40MjU4IDU2My40MTggNDIuNDg2OSA1NjMuNDE4IDQ3LjY4MjJWNzYuODc4Mkg1NTEuNjJaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNNTIwLjY5MyA3OC41Njc4QzUxNS4zMjMgNzguNTY3OCA1MTAuNTc4IDc3LjM1MjYgNTA2LjQ1OCA3NC45MjIxQzUwMi4zMzkgNzIuNDkxNiA0OTkuMTAyIDY5LjEwMzcgNDk2Ljc0OCA2NC43NTgzQzQ5NC40NjggNjAuNDEyOSA0OTMuMzI4IDU1LjQ0MTUgNDkzLjMyOCA0OS44NDQxQzQ5My4zMjggNDQuMDI1NyA0OTQuNDY4IDM4Ljk4MDYgNDk2Ljc0OCAzNC43MDg5QzQ5OS4wMjkgMzAuNDM3MiA1MDIuMjI5IDI3LjEyMjkgNTA2LjM0OCAyNC43NjYxQzUxMC41NDEgMjIuMzM1NiA1MTUuMzU5IDIxLjEyMDQgNTIwLjgwMyAyMS4xMjA0QzUyNi4xIDIxLjEyMDQgNTMwLjczNCAyMi4yOTg4IDUzNC43MDYgMjQuNjU1NkM1MzguNjc5IDI2LjkzODggNTQxLjc2OCAzMC4wNjg5IDU0My45NzUgMzQuMDQ2MUM1NDYuMjU2IDM4LjAyMzIgNTQ3LjM5NiA0Mi41NTI3IDU0Ny4zOTYgNDcuNjM0NkM1NDcuMzk2IDQ4LjY2NTcgNTQ3LjM1OSA0OS41NDk1IDU0Ny4yODUgNTAuMjg2QzU0Ny4yODUgNTEuMDIyNSA1NDcuMjEyIDUxLjkwNjMgNTQ3LjA2NSA1Mi45Mzc0SDUwNS4wMjRDNTA1LjI0NSA1Ni4wMzA3IDUwNi4wMTcgNTguNzkyNiA1MDcuMzQxIDYxLjIyMzFDNTA4LjY2NSA2My41Nzk5IDUxMC40NjggNjUuNDU4IDUxMi43NDggNjYuODU3NEM1MTUuMDI4IDY4LjE4MzEgNTE3LjY0IDY4Ljg0NTkgNTIwLjU4MiA2OC44NDU5QzUyMy43NDYgNjguODQ1OSA1MjYuNDMxIDY4LjE0NjIgNTI4LjYzNyA2Ni43NDY5QzUzMC45MTggNjUuMjczOSA1MzIuNjEgNjMuMjExNyA1MzMuNzEzIDYwLjU2MDJINTQ1Ljg1MUM1NDQuODk1IDYzLjg3NDUgNTQzLjI3NiA2Ni44OTQyIDU0MC45OTYgNjkuNjE5M0M1MzguNzg5IDcyLjM0NDMgNTM1Ljk5NCA3NC41MTcgNTMyLjYxIDc2LjEzNzNDNTI5LjIyNiA3Ny43NTc2IDUyNS4yNTQgNzguNTY3OCA1MjAuNjkzIDc4LjU2NzhaTTUwNS4xMzQgNDQuNjUxN0g1MzUuNDc5QzUzNS4zMzIgNDAuMzggNTMzLjgyNCAzNy4wMjg5IDUzMC45NTUgMzQuNTk4NEM1MjguMDg2IDMyLjA5NDMgNTI0LjU5MiAzMC44NDIzIDUyMC40NzIgMzAuODQyM0M1MTYuNzk0IDMwLjg0MjMgNTEzLjQ0NyAzMS45ODM5IDUxMC40MzEgMzQuMjY3QzUwNy40MTUgMzYuNTUwMiA1MDUuNjQ5IDQwLjAxMTggNTA1LjEzNCA0NC42NTE3WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTQwMS41NzQgNzguNTY3OEMzOTYuMjA0IDc4LjU2NzggMzkxLjQ1OSA3Ny4zNTI2IDM4Ny4zMzkgNzQuOTIyMUMzODMuMjIgNzIuNDkxNiAzNzkuOTgzIDY5LjEwMzcgMzc3LjYyOSA2NC43NTgzQzM3NS4zNDkgNjAuNDEyOSAzNzQuMjA4IDU1LjQ0MTUgMzc0LjIwOCA0OS44NDQxQzM3NC4yMDggNDQuMDI1NyAzNzUuMzQ5IDM4Ljk4MDYgMzc3LjYyOSAzNC43MDg5QzM3OS45MSAzMC40MzcyIDM4My4xMSAyNy4xMjI5IDM4Ny4yMjkgMjQuNzY2MUMzOTEuNDIyIDIyLjMzNTYgMzk2LjI0IDIxLjEyMDQgNDAxLjY4NCAyMS4xMjA0QzQwNi45OCAyMS4xMjA0IDQxMS42MTUgMjIuMjk4OCA0MTUuNTg3IDI0LjY1NTZDNDE5LjU2IDI2LjkzODggNDIyLjY0OSAzMC4wNjg5IDQyNC44NTYgMzQuMDQ2MUM0MjcuMTM2IDM4LjAyMzIgNDI4LjI3NyA0Mi41NTI3IDQyOC4yNzcgNDcuNjM0NkM0MjguMjc3IDQ4LjY2NTcgNDI4LjI0IDQ5LjU0OTUgNDI4LjE2NiA1MC4yODZDNDI4LjE2NiA1MS4wMjI1IDQyOC4wOTMgNTEuOTA2MyA0MjcuOTQ2IDUyLjkzNzRIMzg1LjkwNUMzODYuMTI2IDU2LjAzMDcgMzg2Ljg5OCA1OC43OTI2IDM4OC4yMjIgNjEuMjIzMUMzODkuNTQ2IDYzLjU3OTkgMzkxLjM0OCA2NS40NTggMzkzLjYyOSA2Ni44NTc0QzM5NS45MDkgNjguMTgzMSAzOTguNTIxIDY4Ljg0NTkgNDAxLjQ2MyA2OC44NDU5QzQwNC42MjYgNjguODQ1OSA0MDcuMzExIDY4LjE0NjIgNDA5LjUxOCA2Ni43NDY5QzQxMS43OTkgNjUuMjczOSA0MTMuNDkxIDYzLjIxMTcgNDE0LjU5NCA2MC41NjAySDQyNi43MzJDNDI1Ljc3NiA2My44NzQ1IDQyNC4xNTcgNjYuODk0MiA0MjEuODc3IDY5LjYxOTNDNDE5LjY3IDcyLjM0NDMgNDE2Ljg3NCA3NC41MTcgNDEzLjQ5MSA3Ni4xMzczQzQxMC4xMDcgNzcuNzU3NiA0MDYuMTM0IDc4LjU2NzggNDAxLjU3NCA3OC41Njc4Wk0zODYuMDE1IDQ0LjY1MTdINDE2LjM2QzQxNi4yMTIgNDAuMzggNDE0LjcwNCAzNy4wMjg5IDQxMS44MzUgMzQuNTk4NEM0MDguOTY3IDMyLjA5NDMgNDA1LjQ3MiAzMC44NDIzIDQwMS4zNTMgMzAuODQyM0MzOTcuNjc1IDMwLjg0MjMgMzk0LjMyOCAzMS45ODM5IDM5MS4zMTIgMzQuMjY3QzM4OC4yOTYgMzYuNTUwMiAzODYuNTMgNDAuMDExOCAzODYuMDE1IDQ0LjY1MTdaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMjU3LjYyNCA3Ni44NzgyVjIyLjQzNzVIMjY4Ljc5MUwyNjkuMDEgMzAuNDVDMjcwLjgzNSAyNy40NDk5IDI3My4zNTMgMjUuMTQ0OSAyNzYuNTY0IDIzLjUzNTFDMjc5Ljg0OCAyMS45MjUzIDI4My4zMTUgMjEuMTIwNCAyODYuOTY0IDIxLjEyMDRDMjkzLjMxNCAyMS4xMjA0IDI5OC40NiAyMy4xMzI3IDMwMi40MDEgMjcuMTU3MkMzMDYuMzQyIDMxLjEwODUgMzA4LjMxMyAzNy4wMzU1IDMwOC4zMTMgNDQuOTM4MlY3Ni44NzgySDI5Ni43MDhWNDYuMzY1MUMyOTYuNzA4IDQxLjQ2MjUgMjk1LjYxMyAzNy42OTQxIDI5My40MjQgMzUuMDU5OEMyOTEuMjM0IDMyLjM1MjQgMjg3Ljk1IDMwLjk5ODcgMjgzLjU3MSAzMC45OTg3QzI3OS4yNjQgMzAuOTk4NyAyNzUuNzk4IDMyLjQ5ODggMjczLjE3IDM1LjQ5ODlDMjcwLjU0MyAzOC40MjU4IDI2OS4yMjkgNDIuNDg2OSAyNjkuMjI5IDQ3LjY4MjJWNzYuODc4MkgyNTcuNjI0WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTIzOC4xOTMgNzYuODc4MlYwLjAwMDEwNjgxMkgyNTAuMDIxVjc2Ljg3ODJIMjM4LjE5M1oiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik00NjQuMzg4IDIwLjUyOUM0NTUuNzk4IDIwLjUyOSA0NDguMiAyNS4wODMgNDQ0LjczNSAzMC41NDQ3VjIyLjA4NDhINDMzLjM0NlY5OS45NDE2SDQzNi42NjVDNDQxLjEyMyA5OS45NDE2IDQ0NC43MzUgOTYuMzQzNiA0NDQuNzM1IDkxLjkwM1Y2OS42ODM3QzQ0OC4zMTQgNzUuMzU2IDQ1NS4zNDIgNzguODA4IDQ2My4zOCA3OC44MDhDNDc4LjIzNCA3OC44MDggNDg5Ljk0OCA2Ny40NjM0IDQ4OS45NDggNDkuNjY4NUM0ODkuOTQ4IDMxLjg3MzYgNDc4LjIxOCAyMC41MjkgNDY0LjM3MiAyMC41MjlINDY0LjM4OFpNNDYxLjE1MSA2OC4zNTQ4QzQ1MS42NjUgNjguMzU0OCA0NDMuOTU0IDYwLjc4NjMgNDQzLjk1NCA0OS42Njg1QzQ0My45NTQgMzguNTUwNyA0NTEuNjY1IDMwLjk4MjIgNDYxLjE1MSAzMC45ODIyQzQ3MC42MzYgMzAuOTgyMiA0NzguMzQ4IDM4LjU1MDcgNDc4LjM0OCA0OS42Njg1QzQ3OC4zNDggNjAuNzg2MyA0NzAuNjM2IDY4LjM1NDggNDYxLjE1MSA2OC4zNTQ4WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTQ2NC4zODggMjAuNTI5QzQ1NS43OTggMjAuNTI5IDQ0OC4yIDI1LjA4MyA0NDQuNzM1IDMwLjU0NDdWMjIuMDg0OEg0MzMuMzQ2Vjk5Ljk0MTZINDM2LjY2NUM0NDEuMTIzIDk5Ljk0MTYgNDQ0LjczNSA5Ni4zNDM2IDQ0NC43MzUgOTEuOTAzVjY5LjY4MzdDNDQ4LjMxNCA3NS4zNTYgNDU1LjM0MiA3OC44MDggNDYzLjM4IDc4LjgwOEM0NzguMjM0IDc4LjgwOCA0ODkuOTQ4IDY3LjQ2MzQgNDg5Ljk0OCA0OS42Njg1QzQ4OS45NDggMzEuODczNiA0NzguMjE4IDIwLjUyOSA0NjQuMzcyIDIwLjUyOUg0NjQuMzg4Wk00NjEuMTUxIDY4LjM1NDhDNDUxLjY2NSA2OC4zNTQ4IDQ0My45NTQgNjAuNzg2MyA0NDMuOTU0IDQ5LjY2ODVDNDQzLjk1NCAzOC41NTA3IDQ1MS42NjUgMzAuOTgyMiA0NjEuMTUxIDMwLjk4MjJDNDcwLjYzNiAzMC45ODIyIDQ3OC4zNDggMzguNTUwNyA0NzguMzQ4IDQ5LjY2ODVDNDc4LjM0OCA2MC43ODYzIDQ3MC42MzYgNjguMzU0OCA0NjEuMTUxIDY4LjM1NDhaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjIiLz4KPHBhdGggZD0iTTMzOC4xNzkgNzcuOTc2NEMzNDYuNTEzIDc3Ljk3NjQgMzUzLjg4NCA3My41MTkyIDM1Ny4yNDYgNjguMTczOFY3Ni40NTM3SDM2OC4yOTVWMC4yNTM0MzNIMzY1LjA3NUMzNjAuNzUgMC4yNTM0MzMgMzU3LjI0NiAzLjc3NDggMzU3LjI0NiA4LjEyMDkzVjI5Ljg2NzVDMzUzLjc3MyAyNC4zMTU5IDM0Ni45NTUgMjAuOTM3MyAzMzkuMTU3IDIwLjkzNzNDMzI0Ljc0NiAyMC45MzczIDMxMy4zODIgMzIuMDQwNiAzMTMuMzgyIDQ5LjQ1NjhDMzEzLjM4MiA2Ni44NzMxIDMyNC43NjIgNzcuOTc2NCAzMzguMTk1IDc3Ljk3NjRIMzM4LjE3OVpNMzQxLjMyIDMxLjE2ODFDMzUwLjUyMiAzMS4xNjgxIDM1OC4wMDQgMzguNTc1NiAzNTguMDA0IDQ5LjQ1NjhDMzU4LjAwNCA2MC4zMzggMzUwLjUyMiA2Ny43NDU2IDM0MS4zMiA2Ny43NDU2QzMzMi4xMTggNjcuNzQ1NiAzMjQuNjM2IDYwLjMzOCAzMjQuNjM2IDQ5LjQ1NjhDMzI0LjYzNiAzOC41NzU2IDMzMi4xMTggMzEuMTY4MSAzNDEuMzIgMzEuMTY4MVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik0zMzguMTc5IDc3Ljk3NjRDMzQ2LjUxMyA3Ny45NzY0IDM1My44ODQgNzMuNTE5MiAzNTcuMjQ2IDY4LjE3MzhWNzYuNDUzN0gzNjguMjk1VjAuMjUzNDMzSDM2NS4wNzVDMzYwLjc1IDAuMjUzNDMzIDM1Ny4yNDYgMy43NzQ4IDM1Ny4yNDYgOC4xMjA5M1YyOS44Njc1QzM1My43NzMgMjQuMzE1OSAzNDYuOTU1IDIwLjkzNzMgMzM5LjE1NyAyMC45MzczQzMyNC43NDYgMjAuOTM3MyAzMTMuMzgyIDMyLjA0MDYgMzEzLjM4MiA0OS40NTY4QzMxMy4zODIgNjYuODczMSAzMjQuNzYyIDc3Ljk3NjQgMzM4LjE5NSA3Ny45NzY0SDMzOC4xNzlaTTM0MS4zMiAzMS4xNjgxQzM1MC41MjIgMzEuMTY4MSAzNTguMDA0IDM4LjU3NTYgMzU4LjAwNCA0OS40NTY4QzM1OC4wMDQgNjAuMzM4IDM1MC41MjIgNjcuNzQ1NiAzNDEuMzIgNjcuNzQ1NkMzMzIuMTE4IDY3Ljc0NTYgMzI0LjYzNiA2MC4zMzggMzI0LjYzNiA0OS40NTY4QzMyNC42MzYgMzguNTc1NiAzMzIuMTE4IDMxLjE2ODEgMzQxLjMyIDMxLjE2ODFaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjIiLz4KPHBhdGggZD0iTTYzMy44NjQgNzcuOTc2NEM2NDIuMTk4IDc3Ljk3NjQgNjQ5LjU2OSA3My41MTkyIDY1Mi45MzEgNjguMTczOFY3Ni40NTM3SDY2My45OFYwLjI1MzQzM0g2NjAuNzZDNjU2LjQzNSAwLjI1MzQzMyA2NTIuOTMxIDMuNzc0OCA2NTIuOTMxIDguMTIwOTNWMjkuODY3NUM2NDkuNDU5IDI0LjMxNTkgNjQyLjY0IDIwLjkzNzMgNjM0Ljg0MiAyMC45MzczQzYyMC40MzIgMjAuOTM3MyA2MDkuMDY3IDMyLjA0MDYgNjA5LjA2NyA0OS40NTY4QzYwOS4wNjcgNjYuODczMSA2MjAuNDQ3IDc3Ljk3NjQgNjMzLjg4IDc3Ljk3NjRINjMzLjg2NFpNNjM3LjAwNSAzMS4xNjgxQzY0Ni4yMDcgMzEuMTY4MSA2NTMuNjg5IDM4LjU3NTYgNjUzLjY4OSA0OS40NTY4QzY1My42ODkgNjAuMzM4IDY0Ni4yMDcgNjcuNzQ1NiA2MzcuMDA1IDY3Ljc0NTZDNjI3LjgwMyA2Ny43NDU2IDYyMC4zMjEgNjAuMzM4IDYyMC4zMjEgNDkuNDU2OEM2MjAuMzIxIDM4LjU3NTYgNjI3LjgwMyAzMS4xNjgxIDYzNy4wMDUgMzEuMTY4MVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik02MzMuODY0IDc3Ljk3NjRDNjQyLjE5OCA3Ny45NzY0IDY0OS41NjkgNzMuNTE5MiA2NTIuOTMxIDY4LjE3MzhWNzYuNDUzN0g2NjMuOThWMC4yNTM0MzNINjYwLjc2QzY1Ni40MzUgMC4yNTM0MzMgNjUyLjkzMSAzLjc3NDggNjUyLjkzMSA4LjEyMDkzVjI5Ljg2NzVDNjQ5LjQ1OSAyNC4zMTU5IDY0Mi42NCAyMC45MzczIDYzNC44NDIgMjAuOTM3M0M2MjAuNDMyIDIwLjkzNzMgNjA5LjA2NyAzMi4wNDA2IDYwOS4wNjcgNDkuNDU2OEM2MDkuMDY3IDY2Ljg3MzEgNjIwLjQ0NyA3Ny45NzY0IDYzMy44OCA3Ny45NzY0SDYzMy44NjRaTTYzNy4wMDUgMzEuMTY4MUM2NDYuMjA3IDMxLjE2ODEgNjUzLjY4OSAzOC41NzU2IDY1My42ODkgNDkuNDU2OEM2NTMuNjg5IDYwLjMzOCA2NDYuMjA3IDY3Ljc0NTYgNjM3LjAwNSA2Ny43NDU2QzYyNy44MDMgNjcuNzQ1NiA2MjAuMzIxIDYwLjMzOCA2MjAuMzIxIDQ5LjQ1NjhDNjIwLjMyMSAzOC41NzU2IDYyNy44MDMgMzEuMTY4MSA2MzcuMDA1IDMxLjE2ODFaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjIiLz4KPHBhdGggZD0iTTk4Mi43NiAxOTAuMzFWMTM1Ljg3SDk5NEw5OTQuMzMgMTQ1LjA5Qzk5Ni4xNjcgMTQxLjc5NyA5OTguNjY0IDEzOS4yMzYgMTAwMS44MiAxMzcuNDA2QzEwMDUuMDYgMTM1LjUwNCAxMDA4Ljg0IDEzNC41NTMgMTAxMy4xNyAxMzQuNTUzVjE0Ni43MzZIMTAwOS45OEMxMDA0Ljc2IDE0Ni43MzYgMTAwMC44NyAxNDguMDkgOTk4LjI5NyAxNTAuNzk3Qzk5NS43MjYgMTUzLjQzMSA5OTQuNDQgMTU3LjQ5MiA5OTQuNDQgMTYyLjk4VjE5MC4zMUg5ODIuNzZaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNOTQ5Ljc5NSAxOTJDOTQ0LjUzIDE5MiA5MzkuNzc2IDE5MC44NTggOTM1LjUzNSAxODguNTc1QzkzMS4zNjYgMTg2LjIxOCA5MjguMDM5IDE4Mi44NjcgOTI1LjU1MiAxNzguNTIyQzkyMy4xMzkgMTc0LjE3NyA5MjEuOTMzIDE2OS4wNTggOTIxLjkzMyAxNjMuMTY2QzkyMS45MzMgMTU3LjI3NCA5MjMuMTc2IDE1Mi4xOTIgOTI1LjY2MiAxNDcuOTJDOTI4LjIyMiAxNDMuNjQ4IDkzMS42MjIgMTQwLjM3MSA5MzUuODY0IDEzOC4wODhDOTQwLjE3OCAxMzUuNzMxIDk0NC45NjggMTM0LjU1MyA5NTAuMjM0IDEzNC41NTNDOTU1LjQ5OSAxMzQuNTUzIDk2MC4yNTMgMTM1LjY5NCA5NjQuNDk0IDEzNy45NzdDOTY4LjczNiAxNDAuMjYxIDk3Mi4xMzYgMTQzLjUzOCA5NzQuNjk2IDE0Ny44MUM5NzcuMjU1IDE1Mi4wODEgOTc4LjUzNSAxNTcuMiA5NzguNTM1IDE2My4xNjZDOTc4LjUzNSAxNjguNzYzIDk3Ny4yOTIgMTczLjczNSA5NzQuODA2IDE3OC4wOEM5NzIuMzkyIDE4Mi40MjUgOTY5LjAyOCAxODUuODUgOTY0LjcxNCAxODguMzU0Qzk2MC4zOTkgMTkwLjc4NSA5NTUuNDI2IDE5MiA5NDkuNzk1IDE5MlpNOTQ5LjkwNSAxODEuODM2Qzk1My4xMjMgMTgxLjgzNiA5NTUuOTc1IDE4MS4wMjYgOTU4LjQ2MSAxNzkuNDA2Qzk2MS4wMjEgMTc3Ljc4NSA5NjMuMDMyIDE3NS41NzYgOTY0LjQ5NCAxNzIuNzc3Qzk2NS45NTcgMTY5LjkwNSA5NjYuNjg4IDE2Ni42NjQgOTY2LjY4OCAxNjMuMDU1Qzk2Ni42ODggMTU5LjM3MyA5NjUuOTU3IDE1Ni4xNjkgOTY0LjQ5NCAxNTMuNDQ0Qzk2My4xMDUgMTUwLjY0NSA5NjEuMTY3IDE0OC41MDkgOTU4LjY4IDE0Ny4wMzZDOTU2LjE5NCAxNDUuNDkgOTUzLjMwNSAxNDQuNzE2IDk1MC4wMTQgMTQ0LjcxNkM5NDYuNTc3IDE0NC43MTYgOTQzLjYxNiAxNDUuNTI3IDk0MS4xMjkgMTQ3LjE0N0M5MzguNzE2IDE0OC43NjcgOTM2Ljg1MSAxNTAuOTc3IDkzNS41MzUgMTUzLjc3NUM5MzQuMjkyIDE1Ni41IDkzMy42NyAxNTkuNjMxIDkzMy42NyAxNjMuMTY2QzkzMy42NyAxNjcuMjE3IDkzNC40MDEgMTcwLjY0MSA5MzUuODY0IDE3My40NEM5MzcuNCAxNzYuMjM5IDkzOS40MTEgMTc4LjMzOCA5NDEuODk3IDE3OS43MzdDOTQ0LjM4MyAxODEuMTM3IDk0Ny4wNTMgMTgxLjgzNiA5NDkuOTA1IDE4MS44MzZaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNODU5LjQxNiAxOTAuMzExTDg0My4zNjUgMTM1LjM5OEg4NTUuMDE5TDg2NS42ODMgMTc3LjhMODc3LjMzNyAxMzUuMzk4SDg4OS45OEw5MDEuNjM0IDE3Ny42ODlMOTEyLjE4OCAxMzUuMzk4SDkyMy42MjJMOTA3LjU3MSAxOTAuMkg4OTUuMjU3TDg4My40OTMgMTQ4LjQ2Mkw4NzEuNzMgMTkwLjMxMUg4NTkuNDE2WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTgzMC41NTYgMTkwLjMxMUM4MjUuMTI1IDE5MC4zMTEgODIwLjk0MiAxODguOTk0IDgxOC4wMDcgMTg2LjM2MUM4MTUuMDcyIDE4My43MjggODEzLjYwNCAxNzkuNDEyIDgxMy42MDQgMTczLjQxNFYxNDUuNjU2SDgwNS4zNDlWMTM1Ljg5Mkg4MTMuNjA0VjEyMi43MjZIODI1LjI3MlYxMzUuODkySDgzOS4xNDFWMTQ1LjY1Nkg4MjUuMjcyVjE3My40MTRDODI1LjI3MiAxNzYuMTk0IDgyNS44OTYgMTc4LjA1OSA4MjcuMTQzIDE3OS4wMUM4MjguMzkxIDE3OS45NjEgODMwLjMzNSAxODAuNDM2IDgzMi45NzcgMTgwLjQzNkg4MzkuMTQxVjE5MC4zMTFIODMwLjU1NloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik03NzkuNDkgMTkyQzc3NC4xMiAxOTIgNzY5LjM3NSAxOTAuNzg1IDc2NS4yNTYgMTg4LjM1NEM3NjEuMTM2IDE4NS45MjQgNzU3LjkgMTgyLjUzNiA3NTUuNTQ2IDE3OC4xOTFDNzUzLjI2NSAxNzMuODQ1IDc1Mi4xMjUgMTY4Ljg3NCA3NTIuMTI1IDE2My4yNzZDNzUyLjEyNSAxNTcuNDU4IDc1My4yNjUgMTUyLjQxMyA3NTUuNTQ2IDE0OC4xNDFDNzU3LjgyNiAxNDMuODY5IDc2MS4wMjYgMTQwLjU1NSA3NjUuMTQ1IDEzOC4xOThDNzY5LjMzOCAxMzUuNzY4IDc3NC4xNTcgMTM0LjU1MyA3NzkuNiAxMzQuNTUzQzc4NC44OTcgMTM0LjU1MyA3ODkuNTMxIDEzNS43MzEgNzkzLjUwNCAxMzguMDg4Qzc5Ny40NzYgMTQwLjM3MSA4MDAuNTY2IDE0My41MDEgODAyLjc3MyAxNDcuNDc4QzgwNS4wNTMgMTUxLjQ1NSA4MDYuMTkzIDE1NS45ODUgODA2LjE5MyAxNjEuMDY3QzgwNi4xOTMgMTYyLjA5OCA4MDYuMTU2IDE2Mi45ODIgODA2LjA4MyAxNjMuNzE4QzgwNi4wODMgMTY0LjQ1NSA4MDYuMDA5IDE2NS4zMzkgODA1Ljg2MiAxNjYuMzdINzYzLjgyMUM3NjQuMDQyIDE2OS40NjMgNzY0LjgxNCAxNzIuMjI1IDc2Ni4xMzkgMTc0LjY1NUM3NjcuNDYzIDE3Ny4wMTIgNzY5LjI2NSAxNzguODkgNzcxLjU0NSAxODAuMjlDNzczLjgyNiAxODEuNjE1IDc3Ni40MzcgMTgyLjI3OCA3NzkuMzggMTgyLjI3OEM3ODIuNTQzIDE4Mi4yNzggNzg1LjIyOCAxODEuNTc4IDc4Ny40MzUgMTgwLjE3OUM3ODkuNzE1IDE3OC43MDYgNzkxLjQwNyAxNzYuNjQ0IDc5Mi41MTEgMTczLjk5Mkg4MDQuNjQ4QzgwMy42OTIgMTc3LjMwNyA4MDIuMDc0IDE4MC4zMjYgNzk5Ljc5MyAxODMuMDUxQzc5Ny41ODYgMTg1Ljc3NyA3OTQuNzkxIDE4Ny45NDkgNzkxLjQwNyAxODkuNTdDNzg4LjAyMyAxOTEuMTkgNzg0LjA1MSAxOTIgNzc5LjQ5IDE5MlpNNzYzLjkzMiAxNTguMDg0SDc5NC4yNzZDNzk0LjEyOSAxNTMuODEyIDc5Mi42MjEgMTUwLjQ2MSA3ODkuNzUyIDE0OC4wMzFDNzg2Ljg4MyAxNDUuNTI3IDc4My4zODkgMTQ0LjI3NSA3NzkuMjY5IDE0NC4yNzVDNzc1LjU5MSAxNDQuMjc1IDc3Mi4yNDQgMTQ1LjQxNiA3NjkuMjI4IDE0Ny42OTlDNzY2LjIxMiAxNDkuOTgyIDc2NC40NDcgMTUzLjQ0NCA3NjMuOTMyIDE1OC4wODRaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNNjgzLjY5NSAxOTAuMzFWMTEzLjQzMkg2OTUuNDY1TDczNC40NDEgMTcxLjA5MVYxMTMuNDMySDc0Ni4yMTFWMTkwLjMxSDczNC40NDFMNjk1LjQ2NSAxMzIuNjUyVjE5MC4zMUg2ODMuNjk1WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTYyOS45NTggMTkyQzYyNC41ODggMTkyIDYxOS44NDMgMTkwLjc4NSA2MTUuNzI0IDE4OC4zNTRDNjExLjYwNCAxODUuOTI0IDYwOC4zNjcgMTgyLjUzNiA2MDYuMDEzIDE3OC4xOTFDNjAzLjczMyAxNzMuODQ1IDYwMi41OTMgMTY4Ljg3NCA2MDIuNTkzIDE2My4yNzZDNjAyLjU5MyAxNTcuNDU4IDYwMy43MzMgMTUyLjQxMyA2MDYuMDEzIDE0OC4xNDFDNjA4LjI5NCAxNDMuODY5IDYxMS40OTQgMTQwLjU1NSA2MTUuNjEzIDEzOC4xOThDNjE5LjgwNiAxMzUuNzY4IDYyNC42MjUgMTM0LjU1MyA2MzAuMDY4IDEzNC41NTNDNjM1LjM2NSAxMzQuNTUzIDYzOS45OTkgMTM1LjczMSA2NDMuOTcxIDEzOC4wODhDNjQ3Ljk0NCAxNDAuMzcxIDY1MS4wMzMgMTQzLjUwMSA2NTMuMjQgMTQ3LjQ3OEM2NTUuNTIxIDE1MS40NTUgNjU2LjY2MSAxNTUuOTg1IDY1Ni42NjEgMTYxLjA2N0M2NTYuNjYxIDE2Mi4wOTggNjU2LjYyNCAxNjIuOTgyIDY1Ni41NTEgMTYzLjcxOEM2NTYuNTUxIDE2NC40NTUgNjU2LjQ3NyAxNjUuMzM5IDY1Ni4zMyAxNjYuMzdINjE0LjI4OUM2MTQuNTEgMTY5LjQ2MyA2MTUuMjgyIDE3Mi4yMjUgNjE2LjYwNiAxNzQuNjU1QzYxNy45MyAxNzcuMDEyIDYxOS43MzMgMTc4Ljg5IDYyMi4wMTMgMTgwLjI5QzYyNC4yOTQgMTgxLjYxNSA2MjYuOTA1IDE4Mi4yNzggNjI5Ljg0NyAxODIuMjc4QzYzMy4wMTEgMTgyLjI3OCA2MzUuNjk2IDE4MS41NzggNjM3LjkwMyAxODAuMTc5QzY0MC4xODMgMTc4LjcwNiA2NDEuODc1IDE3Ni42NDQgNjQyLjk3OCAxNzMuOTkySDY1NS4xMTZDNjU0LjE2IDE3Ny4zMDcgNjUyLjU0MSAxODAuMzI2IDY1MC4yNjEgMTgzLjA1MUM2NDguMDU0IDE4NS43NzcgNjQ1LjI1OSAxODcuOTQ5IDY0MS44NzUgMTg5LjU3QzYzOC40OTEgMTkxLjE5IDYzNC41MTkgMTkyIDYyOS45NTggMTkyWk02MTQuMzk5IDE1OC4wODRINjQ0Ljc0NEM2NDQuNTk3IDE1My44MTIgNjQzLjA4OSAxNTAuNDYxIDY0MC4yMiAxNDguMDMxQzYzNy4zNTEgMTQ1LjUyNyA2MzMuODU3IDE0NC4yNzUgNjI5LjczNyAxNDQuMjc1QzYyNi4wNTkgMTQ0LjI3NSA2MjIuNzEyIDE0NS40MTYgNjE5LjY5NiAxNDcuNjk5QzYxNi42OCAxNDkuOTgyIDYxNC45MTQgMTUzLjQ0NCA2MTQuMzk5IDE1OC4wODRaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNNTcyLjE3OSAxOTAuMzFWMTM1Ljg3SDU4My43MzFMNTg0LjA3MSAxNDUuMDlDNTg1Ljk1OCAxNDEuNzk3IDU4OC41MjYgMTM5LjIzNiA1OTEuNzcyIDEzNy40MDZDNTk1LjA5NCAxMzUuNTA0IDU5OC45ODMgMTM0LjU1MyA2MDMuNDM3IDEzNC41NTNWMTQ2LjczNkg2MDAuMTUzQzU5NC43OTIgMTQ2LjczNiA1OTAuNzkxIDE0OC4wOSA1ODguMTQ4IDE1MC43OTdDNTg1LjUwNSAxNTMuNDMxIDU4NC4xODQgMTU3LjQ5MiA1ODQuMTg0IDE2Mi45OFYxOTAuMzFINTcyLjE3OVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik01MzIuNDExIDE5MkM1MjguODg5IDE5MiA1MjUuNjYxIDE5MS4zNzQgNTIyLjcyNyAxOTAuMTIyQzUxOS43OTIgMTg4Ljc5NiA1MTcuNDQ0IDE4Ni44ODEgNTE1LjY4NCAxODQuMzc3QzUxMy45MjMgMTgxLjg3MyA1MTMuMDQyIDE3OC44NTMgNTEzLjA0MiAxNzUuMzE4QzUxMy4wNDIgMTcxLjEyIDUxNC4wNyAxNjcuNzY5IDUxNi4xMjQgMTY1LjI2NUM1MTguMjUxIDE2Mi42ODcgNTIxLjA3NiAxNjAuODA5IDUyNC41OTcgMTU5LjYzMUM1MjguMTkyIDE1OC4zNzkgNTMyLjExNyAxNTcuNzUzIDUzNi4zNzIgMTU3Ljc1M0g1NTAuMjM4QzU1MC4yMzggMTU0LjU4NiA1NDkuNzI0IDE1Mi4wNDUgNTQ4LjY5NyAxNTAuMTNDNTQ3LjY3IDE0OC4xNDEgNTQ2LjI3NiAxNDYuNzA1IDU0NC41MTYgMTQ1LjgyMUM1NDIuNzU1IDE0NC44NjQgNTQwLjcwMSAxNDQuMzg1IDUzOC4zNTMgMTQ0LjM4NUM1MzUuMjcyIDE0NC4zODUgNTMyLjU1NyAxNDUuMTIxIDUzMC4yMSAxNDYuNTk0QzUyNy45MzUgMTQ3Ljk5NCA1MjYuNTA1IDE1MC4yNCA1MjUuOTE4IDE1My4zMzRINTE0LjE0M0M1MTQuNTEgMTQ5LjM1NiA1MTUuODMgMTQ1Ljk2OCA1MTguMTA1IDE0My4xN0M1MjAuNDUyIDE0MC4zNzEgNTIzLjQyMyAxMzguMjM1IDUyNy4wMTggMTM2Ljc2MkM1MzAuNjEzIDEzNS4yODkgNTM0LjQyOCAxMzQuNTUzIDUzOC40NjMgMTM0LjU1M0M1NDMuNzQ1IDEzNC41NTMgNTQ4LjExIDEzNS41NDcgNTUxLjU1OSAxMzcuNTM1QzU1NS4wOCAxMzkuNDUgNTU3LjY4NCAxNDIuMTM5IDU1OS4zNzIgMTQ1LjZDNTYxLjEzMyAxNDkuMDYyIDU2Mi4wMTMgMTUzLjAwMiA1NjIuMDEzIDE1Ny40MjFWMTc0LjIxM0M1NjIuMDg2IDE3Ni4zNDkgNTYyLjUyNiAxNzcuOTMzIDU2My4zMzMgMTc4Ljk2NEM1NjQuMjE0IDE3OS45MjEgNTY1Ljc1NSAxODAuNDc0IDU2Ny45NTUgMTgwLjYyMVYxOTAuNjc0QzU2NS4wMjEgMTkwLjY3NCA1NjIuNDUzIDE5MC4zNDMgNTYwLjI1MiAxODkuNjhDNTU4LjEyNSAxODkuMDE3IDU1Ni4zNjQgMTg4LjAyMyA1NTQuOTcgMTg2LjY5N0M1NTMuNTc2IDE4NS4yOTggNTUyLjQ3NiAxODMuNTMgNTUxLjY2OSAxODEuMzk0QzU0OS45MDggMTg0LjM0IDU0Ny4zNCAxODYuODQ0IDU0My45NjUgMTg4LjkwN0M1NDAuNTkxIDE5MC45NjkgNTM2LjczOSAxOTIgNTMyLjQxMSAxOTJaTTUzNS4xNjIgMTgyLjM4OUM1MzguMTcgMTgyLjM4OSA1NDAuODExIDE4MS42NTIgNTQzLjA4NSAxODAuMTc5QzU0NS4zNTkgMTc4LjYzMiA1NDcuMTIgMTc2LjY0NCA1NDguMzY3IDE3NC4yMTNDNTQ5LjYxNCAxNzEuNzA5IDU1MC4yMzggMTY5LjAyMSA1NTAuMjM4IDE2Ni4xNDlWMTY1LjkyOEg1MzcuMjUzQzUzNS4xMjUgMTY1LjkyOCA1MzMuMTA4IDE2Ni4xODYgNTMxLjIgMTY2LjcwMUM1MjkuMzY2IDE2Ny4yMTcgNTI3Ljg2MiAxNjguMSA1MjYuNjg4IDE2OS4zNTJDNTI1LjU4OCAxNzAuNTMxIDUyNS4wMzggMTcyLjE4OCA1MjUuMDM4IDE3NC4zMjRDNTI1LjAzOCAxNzcuMTIzIDUyNi4wMjggMTc5LjE4NSA1MjguMDA5IDE4MC41MTFDNTI5Ljk5IDE4MS43NjMgNTMyLjM3NCAxODIuMzg5IDUzNS4xNjIgMTgyLjM4OVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik00ODQuNDU2IDE5MkM0NzkuMTQ1IDE5MiA0NzQuNDUzIDE5MC43ODUgNDcwLjM3OSAxODguMzU0QzQ2Ni4zMDUgMTg1LjkyNCA0NjMuMTA0IDE4Mi41NzMgNDYwLjc3NyAxNzguMzAxQzQ1OC40NDkgMTczLjk1NiA0NTcuMjg1IDE2OC45NDcgNDU3LjI4NSAxNjMuMjc2QzQ1Ny4yODUgMTU3LjY3OSA0NTguNDEyIDE1Mi43MDcgNDYwLjY2NyAxNDguMzYyQzQ2Mi45MjMgMTQ0LjAxNyA0NjYuMDg3IDE0MC42MjkgNDcwLjE2MSAxMzguMTk4QzQ3NC4yMzUgMTM1Ljc2OCA0NzkgMTM0LjU1MyA0ODQuNDU2IDEzNC41NTNDNDkwLjkzMSAxMzQuNTUzIDQ5Ni4zODcgMTM2LjI0NyA1MDAuODI0IDEzOS42MzVDNTA1LjMzNSAxNDIuOTQ5IDUwOC4yODEgMTQ3LjYyNiA1MDkuNjYzIDE1My42NjVINDk3LjQ0MkM0OTYuNzg3IDE1MC45NCA0OTUuMjU5IDE0OC43MyA0OTIuODU4IDE0Ny4wMzZDNDkwLjUzIDE0NS4zNDIgNDg3LjY5MyAxNDQuNDk1IDQ4NC4zNDcgMTQ0LjQ5NUM0ODAuOTI4IDE0NC40OTUgNDc4LjA5MSAxNDUuMzc5IDQ3NS44MzUgMTQ3LjE0N0M0NzMuNTggMTQ4Ljg0MSA0NzEuODcxIDE1MS4xMjQgNDcwLjcwNyAxNTMuOTk2QzQ2OS42MTUgMTU2Ljc5NSA0NjkuMDcgMTU5Ljg4OCA0NjkuMDcgMTYzLjI3NkM0NjkuMDcgMTY2LjgxMiA0NjkuNjUyIDE3MC4wMTUgNDcwLjgxNiAxNzIuODg4QzQ3Mi4wNTIgMTc1LjY4NiA0NzMuNzk4IDE3Ny45MzMgNDc2LjA1NCAxNzkuNjI3QzQ3OC4zODIgMTgxLjI0NyA0ODEuMTQ2IDE4Mi4wNTcgNDg0LjM0NyAxODIuMDU3QzQ4Ny42MjEgMTgyLjA1NyA0OTAuNDIxIDE4MS4yODQgNDkyLjc0OSAxNzkuNzM3QzQ5NS4wNzcgMTc4LjExNyA0OTYuNjQxIDE3NS43OTcgNDk3LjQ0MiAxNzIuNzc3SDUwOS42NjNDNTA4Ljc5IDE3Ni42ODEgNTA3LjE5IDE4MC4wNjkgNTA0Ljg2MiAxODIuOTQxQzUwMi41MzQgMTg1LjgxMyA0OTkuNjI0IDE4OC4wNiA0OTYuMTMyIDE4OS42OEM0OTIuNjQgMTkxLjIyNyA0ODguNzQ4IDE5MiA0ODQuNDU2IDE5MloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik00NDUuNDAzIDEyNi4yNzVDNDQzLjMxOCAxMjYuMjc1IDQ0MS41MjEgMTI1LjU0MyA0NDAuMDExIDEyNC4wNzlDNDM4LjU3MyAxMjIuNTQxIDQzNy44NTQgMTIwLjY3NCA0MzcuODU0IDExOC40NzdDNDM3Ljg1NCAxMTYuMzUzIDQzOC41NzMgMTE0LjU1OSA0NDAuMDExIDExMy4wOTVDNDQxLjUyMSAxMTEuNjMgNDQzLjMxOCAxMTAuODk4IDQ0NS40MDMgMTEwLjg5OEM0NDcuNTYgMTEwLjg5OCA0NDkuMzU4IDExMS42MyA0NTAuNzk2IDExMy4wOTVDNDUyLjMwNiAxMTQuNTU5IDQ1My4wNjEgMTE2LjM1MyA0NTMuMDYxIDExOC40NzdDNDUzLjA2MSAxMjAuNjc0IDQ1Mi4zMDYgMTIyLjU0MSA0NTAuNzk2IDEyNC4wNzlDNDQ5LjM1OCAxMjUuNTQzIDQ0Ny41NiAxMjYuMjc1IDQ0NS40MDMgMTI2LjI3NVpNNDM5LjY4NyAxOTAuMzExVjEzNS44MzFINDUxLjExOVYxOTAuMzExSDQzOS42ODdaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMzQ2LjEgMTkyQzM0MC43MyAxOTIgMzM1Ljk4NSAxOTAuNzg1IDMzMS44NjYgMTg4LjM1NEMzMjcuNzQ2IDE4NS45MjQgMzI0LjUwOSAxODIuNTM2IDMyMi4xNTUgMTc4LjE5MUMzMTkuODc1IDE3My44NDUgMzE4LjczNSAxNjguODc0IDMxOC43MzUgMTYzLjI3NkMzMTguNzM1IDE1Ny40NTggMzE5Ljg3NSAxNTIuNDEzIDMyMi4xNTUgMTQ4LjE0MUMzMjQuNDM2IDE0My44NjkgMzI3LjYzNiAxNDAuNTU1IDMzMS43NTUgMTM4LjE5OEMzMzUuOTQ4IDEzNS43NjggMzQwLjc2NyAxMzQuNTUzIDM0Ni4yMSAxMzQuNTUzQzM1MS41MDcgMTM0LjU1MyAzNTYuMTQxIDEzNS43MzEgMzYwLjExNCAxMzguMDg4QzM2NC4wODYgMTQwLjM3MSAzNjcuMTc1IDE0My41MDEgMzY5LjM4MiAxNDcuNDc4QzM3MS42NjMgMTUxLjQ1NSAzNzIuODAzIDE1NS45ODUgMzcyLjgwMyAxNjEuMDY3QzM3Mi44MDMgMTYyLjA5OCAzNzIuNzY2IDE2Mi45ODIgMzcyLjY5MyAxNjMuNzE4QzM3Mi42OTMgMTY0LjQ1NSAzNzIuNjE5IDE2NS4zMzkgMzcyLjQ3MiAxNjYuMzdIMzMwLjQzMUMzMzAuNjUyIDE2OS40NjMgMzMxLjQyNCAxNzIuMjI1IDMzMi43NDggMTc0LjY1NUMzMzQuMDczIDE3Ny4wMTIgMzM1Ljg3NSAxNzguODkgMzM4LjE1NSAxODAuMjlDMzQwLjQzNiAxODEuNjE1IDM0My4wNDcgMTgyLjI3OCAzNDUuOTkgMTgyLjI3OEMzNDkuMTUzIDE4Mi4yNzggMzUxLjgzOCAxODEuNTc4IDM1NC4wNDUgMTgwLjE3OUMzNTYuMzI1IDE3OC43MDYgMzU4LjAxNyAxNzYuNjQ0IDM1OS4xMiAxNzMuOTkySDM3MS4yNThDMzcwLjMwMiAxNzcuMzA3IDM2OC42ODMgMTgwLjMyNiAzNjYuNDAzIDE4My4wNTFDMzY0LjE5NiAxODUuNzc3IDM2MS40MDEgMTg3Ljk0OSAzNTguMDE3IDE4OS41N0MzNTQuNjMzIDE5MS4xOSAzNTAuNjYxIDE5MiAzNDYuMSAxOTJaTTMzMC41NDIgMTU4LjA4NEgzNjAuODg2QzM2MC43MzkgMTUzLjgxMiAzNTkuMjMxIDE1MC40NjEgMzU2LjM2MiAxNDguMDMxQzM1My40OTMgMTQ1LjUyNyAzNDkuOTk5IDE0NC4yNzUgMzQ1Ljg3OSAxNDQuMjc1QzM0Mi4yMDEgMTQ0LjI3NSAzMzguODU0IDE0NS40MTYgMzM1LjgzOCAxNDcuNjk5QzMzMi44MjIgMTQ5Ljk4MiAzMzEuMDU2IDE1My40NDQgMzMwLjU0MiAxNTguMDg0WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTIzNy42MzMgMTkwLjMxVjExMy40MzJIMjUxLjQyN0wyNzUuODE1IDE2NC45NDFMMjk5Ljg3MiAxMTMuNDMySDMxMy42NjZWMTkwLjMxSDMwMS45NjlWMTM0LjI5OUwyODAuMjI5IDE3OS44NzdIMjcxLjE4TDI0OS4zMyAxMzQuMjk5VjE5MC4zMUgyMzcuNjMzWiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTQwMC45OCAxOTEuNDA5QzQwOS4zMTQgMTkxLjQwOSA0MTYuNjg1IDE4Ni45NTIgNDIwLjA0NyAxODEuNjA2VjE4OS44ODZINDMxLjA5NlYxMTMuNjg2SDQyNy44NzZDNDIzLjU1MSAxMTMuNjg2IDQyMC4wNDcgMTE3LjIwNyA0MjAuMDQ3IDEyMS41NTRWMTQzLjNDNDE2LjU3NCAxMzcuNzQ5IDQwOS43NTYgMTM0LjM3IDQwMS45NTggMTM0LjM3QzM4Ny41NDcgMTM0LjM3IDM3Ni4xODMgMTQ1LjQ3MyAzNzYuMTgzIDE2Mi44ODlDMzc2LjE4MyAxODAuMzA2IDM4Ny41NjMgMTkxLjQwOSA0MDAuOTk1IDE5MS40MDlINDAwLjk4Wk00MDQuMTIxIDE0NC42MDFDNDEzLjMyMyAxNDQuNjAxIDQyMC44MDQgMTUyLjAwOCA0MjAuODA0IDE2Mi44ODlDNDIwLjgwNCAxNzMuNzcxIDQxMy4zMjMgMTgxLjE3OCA0MDQuMTIxIDE4MS4xNzhDMzk0LjkxOCAxODEuMTc4IDM4Ny40MzcgMTczLjc3MSAzODcuNDM3IDE2Mi44ODlDMzg3LjQzNyAxNTIuMDA4IDM5NC45MTggMTQ0LjYwMSA0MDQuMTIxIDE0NC42MDFaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNNDAwLjk4IDE5MS40MDlDNDA5LjMxNCAxOTEuNDA5IDQxNi42ODUgMTg2Ljk1MiA0MjAuMDQ3IDE4MS42MDZWMTg5Ljg4Nkg0MzEuMDk2VjExMy42ODZINDI3Ljg3NkM0MjMuNTUxIDExMy42ODYgNDIwLjA0NyAxMTcuMjA3IDQyMC4wNDcgMTIxLjU1NFYxNDMuM0M0MTYuNTc0IDEzNy43NDkgNDA5Ljc1NiAxMzQuMzcgNDAxLjk1OCAxMzQuMzdDMzg3LjU0NyAxMzQuMzcgMzc2LjE4MyAxNDUuNDczIDM3Ni4xODMgMTYyLjg4OUMzNzYuMTgzIDE4MC4zMDYgMzg3LjU2MyAxOTEuNDA5IDQwMC45OTUgMTkxLjQwOUg0MDAuOThaTTQwNC4xMjEgMTQ0LjYwMUM0MTMuMzIzIDE0NC42MDEgNDIwLjgwNCAxNTIuMDA4IDQyMC44MDQgMTYyLjg4OUM0MjAuODA0IDE3My43NzEgNDEzLjMyMyAxODEuMTc4IDQwNC4xMjEgMTgxLjE3OEMzOTQuOTE4IDE4MS4xNzggMzg3LjQzNyAxNzMuNzcxIDM4Ny40MzcgMTYyLjg4OUMzODcuNDM3IDE1Mi4wMDggMzk0LjkxOCAxNDQuNjAxIDQwNC4xMjEgMTQ0LjYwMVoiIGZpbGw9ImJsYWNrIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8cGF0aCBkPSJNMTA0MS45MSAxNTQuNTJMMTA2MC42NSAxMzUuODQ0SDEwNDcuMjZMMTAyOS4xNiAxNTMuOTgyVjEyMS44MDVDMTAyOS4xNiAxMTcuMzEgMTAyNS41NyAxMTMuNjg2IDEwMjEuMTYgMTEzLjY4NkgxMDE4LjI0VjE4OS43MTlIMTAyOS4xNlYxNjcuMzRMMTAzNC4wOSAxNjIuMzM4TDEwNTEuMTEgMTg5LjcwM0gxMDYzLjg2TDEwNDEuOTEgMTU0LjUwNFYxNTQuNTJaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMTA0MS45MSAxNTQuNTJMMTA2MC42NSAxMzUuODQ0SDEwNDcuMjZMMTAyOS4xNiAxNTMuOTgyVjEyMS44MDVDMTAyOS4xNiAxMTcuMzEgMTAyNS41NyAxMTMuNjg2IDEwMjEuMTYgMTEzLjY4NkgxMDE4LjI0VjE4OS43MTlIMTAyOS4xNlYxNjcuMzRMMTAzNC4wOSAxNjIuMzM4TDEwNTEuMTEgMTg5LjcwM0gxMDYzLjg2TDEwNDEuOTEgMTU0LjUwNFYxNTQuNTJaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjIiLz4KPC9zdmc+Cg==" alt="Independent Medicare Network">
+    <span class="brand-sep"></span>
+    <img src="data:image/png;base64,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" alt="Spark" style="height:22px;width:auto;display:block;" />
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search resources…" autocomplete="off">
+    </div>
+    <nav class="topnav">
+      <a href="#">Resource Center</a>
+      <a href="#">Join the Community</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-left">
+    <h1>Your 2027<br>AEP Resource Hub</h1>
+    <p>Everything you need to prepare, prospect, enroll, and retain — curated for independent Medicare agents.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary" id="browseBtn">Browse Resources →</button>
+      <button class="btn btn-ghost">Unlock All</button>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="countdown">
+      <div class="label">Time until AEP 2027 begins</div>
+      <div class="cd-row">
+        <div class="cd-unit"><span class="cd-num" id="d">115</span><span class="cd-tag">Days</span></div>
+        <div class="cd-unit"><span class="cd-num" id="h">06</span><span class="cd-tag">Hours</span></div>
+        <div class="cd-unit"><span class="cd-num" id="m">42</span><span class="cd-tag">Mins</span></div>
+        <div class="cd-unit"><span class="cd-num" id="s">18</span><span class="cd-tag">Secs</span></div>
+      </div>
+      <div class="cd-foot">
+        <div class="k">Annual Enrollment Period</div>
+        <div class="v">October 15 – December 7, 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stagebar">
+  <div class="stagebar-inner">
+    <div class="tabs" id="tabs"></div>
+  </div>
+</div>
+
+<main id="main"></main>
+<div class="empty" id="empty" style="max-width:1180px;margin:0 auto;padding:0 40px 80px">No resources match your search.</div>
+
+<script>
+/* ============ verbatim content from the source hub ============ */
+const SECTIONS = [
+  { id:'prep', nav:'AEP Prep', num:'Section 01', title:'AEP Prep — start here',
+    lead:'Everything you need for AEP 2027 — from contracting deadlines and the readiness checklist to live huddles, on-demand training, and Spark-specific tools.',
+    eventBanner: true,
+    deadlines: true,
+    checklists:[
+      {type:'Checklist', flag:'new', title:'AEP 2027 Agent Readiness Checklist', desc:'Full pre-AEP checklist by month: certifications, SOA setup, marketing approval, plan training, and client outreach calendar — everything from July through October.', cta:'Download'},
+      {type:'Guide', flag:'new', title:'AEP Agent Guide — Download', desc:'Your step-by-step AEP playbook: four moves to win AEP, carrier strategy, cross-sell opportunity, and key dates. Free for all IMN members.', cta:'Coming Soon'},
+    ],
+    newsLinks:[
+      {fmt:'Community', title:'Industry News & Updates — IMN Facebook Group', desc:"Stay current on carrier changes, CMS news, and what agents are seeing in the field. Join the conversation in the IMN community.", cta:'Visit Group →', link:'#'},
+    ],
+    huddlePreview: true,
+    vids:[
+      {format:'On Demand', dur:'~60 min', title:'2027 AEP Contracting Strategy', desc:'Which carriers to prioritize, how to get contracted fast, and which markets to target heading into AEP.', flag:'new', flagText:'New'},
+      {format:'On Demand', dur:'~60 min', title:'AEP Readiness Leadership Roundtable', desc:"James Jiang and Nick Tatge on what's changing for 2027 and how independent agents can prepare now."},
+      {format:'On Demand', dur:'~48 min', title:'CY2027 Final Rule Deep Dive', desc:'Pam Harrison walks through every confirmed rule change and what agents need to do before October 1.'},
+      {format:'On Demand', dur:'~44 min', title:'Using AI to Work Smarter This AEP', desc:'How top producers are using AI for lead gen, ANOC analysis, outreach automation, and retention — tested by IMN advisors.'},
+      {format:'On Demand', dur:'~38 min', title:'Running Virtual Enrollments', desc:'Compliant, efficient virtual Medicare enrollments — tools, screen-share workflow, and best practices for remote sales.'},
+    ],
+    docs:[
+      {type:'Guide', title:'CY2027 Final Rule: What Agents Need to Know', desc:'SOA 48-hr wait eliminated, 12-hr event gap removed, call recording reduced to 6 years — all confirmed changes in one place.', cta:'Download'},
+      {type:'Reference', title:'AEP Certification Deadline Tracker', desc:'AHIP and carrier certification deadlines across major plans — stay ahead of cutoffs so you can sell on day one.', cta:'Download'},
+      {type:'Guide', flagText:'Coming Aug', title:'Carrier Plan Change Overview 2027', desc:'Notable benefit changes, premium shifts, and network updates across major MA carriers for plan year 2027.', cta:'Access'},
+      {type:'Guide', title:'CMS & Carrier Requirements for 2027', desc:'How carriers are holding agents accountable for enrollment outcomes — accretion rate, rapid disenrollment, quality enrollments.', cta:'Download'},
+      {type:'Guide', title:'Working with Lead Vendors', desc:'How to calculate CPR, work multiple lead sources, and avoid vendors that lock you into daily caps or underperforming sources.', cta:'Download'},
+    ],
+    tools:[
+      {type:'Tool', flag:'new', title:'Non-Commissionable MA Plan Database', desc:'Search 1,531+ MA plans across 49 states and 11 carriers. Filter by state — built to help agents identify plan exits and commission changes for 2027.', cta:'Search Plans →'},
+    ],
+    },
+  { id:'compliance', nav:'Compliance', num:'Section 02', title:'Compliance Corner',
+    lead:'Everything you need to run a compliant Medicare sales practice through AEP and beyond — sourced from CMS MCMG.',
+    docs:[
+      {type:'Template', title:'SOA Templates — CY2027 Updated', desc:'CMS-compliant Scope of Appointment templates for in-person, phone, and virtual appointments.', cta:'Download'},
+      {type:'Checklist', title:'AEP Compliance Checklist — Field Ready', desc:"Print-ready checklist for AEP season: SOA, event rules, marketing dos and don'ts, post-enrollment requirements.", cta:'Download'},
+      {type:'Reference', title:'TPMO Disclaimer Reference Guide', desc:'When and where to include TPMO disclaimers across marketing materials, phone calls, websites, and events.', cta:'Download'},
+      {type:'Guide', title:'Marketing Materials Approval Guide', desc:"Step-by-step process for carrier approval before AEP — timelines, what's required, and common rejections.", cta:'Download'},
+    ],
+    ccPanels:[
+      {
+        week:'Week 1', title:'Scope of Appointment', desc:'SOA requirements, the 48-hour rule, PTC expiration, and what\'s changing October 1.',
+        flag:'upd', flagText:'Updated',
+        body:`
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h2M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg></div><h3>What is a Scope of Appointment?</h3></div>
+            <div class="cc-card"><p>A Scope of Appointment (SOA) is a written agreement documenting which types of Medicare plans a beneficiary has consented to discuss during a marketing appointment. It must be in place before any sales meeting, whether conducted in person or over the phone.</p><p>The SOA defines the boundaries of the conversation. If it shifts into plan types not listed on the SOA, you must stop and collect a new one before continuing.</p></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><h3>The 48-Hour Rule</h3></div>
+            <div class="cc-card"><p>Currently, there must be at least 48 hours between when a beneficiary completes an SOA and when the scheduled marketing appointment takes place.</p><p>Two exceptions apply:</p><ul class="cc-list-items"><li>Walk-in appointments initiated by the beneficiary without a prior scheduled meeting</li><li>When a beneficiary is in the last 4 days of a valid enrollment period</li></ul><div class="cc-note"><strong>Inbound calls:</strong> For inbound calls that become sales calls, the 48-hour wait does not apply — but you must still obtain a verbal SOA on the recorded line before discussing specific plans.</div></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg></div><h3>SOA Validity and Storage</h3></div>
+            <div class="cc-card"><p>SOAs are valid for 12 months from the date of the beneficiary's signature or verbal agreement. Do not use SOAs older than 12 months.</p><p>Keep all SOAs on file — even those where no sale resulted. If a complaint is ever filed, you must be able to produce both the SOA and the call recording.</p></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3>Permission to Contact Expiration</h3></div>
+            <div class="cc-card"><table class="cc-table"><thead><tr><th>Product Line</th><th>PTC Expiration Window</th></tr></thead><tbody><tr><td>Medicare Advantage &amp; Part D leads</td><td>12 months from signature date</td></tr><tr><td>Medicare Supplement leads</td><td>12 months from signature date</td></tr><tr><td>Business Reply Cards (BRCs)</td><td>12 months, or when the collection purpose has been served — whichever comes first</td></tr></tbody></table><p style="margin-top:12px;font-size:12.5px;color:var(--faint);font-style:italic;">After expiration, you must re-establish PTC before making outbound contact, even if you have had prior conversations with that individual.</p></div>
+          </div>
+          <div class="cc-update"><span class="cc-update-tag">CY2027 Update</span><h4>48-Hour Wait Eliminated — Effective October 1, 2026</h4><p>The mandatory 48-hour waiting period between SOA completion and a marketing appointment is being eliminated. The SOA itself is still required — but same-day SOA and same-day appointment will be permitted starting October 1, 2026 for discussing PY2027 plans.</p><p>Update your intake and scheduling workflows before October 1, 2026.</p></div>
+        `
+      },
+      {
+        week:'Week 2', title:'Call Recording Requirements', desc:'Which calls must be recorded, retention requirements, and what\'s changing October 1.',
+        body:`
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div><h3>Which Calls Must Be Recorded</h3></div>
+            <div class="cc-card"><p>All sales, marketing (including retention marketing), and enrollment calls — inbound and outbound — must be recorded in their entirety. This includes video calls.</p><p>Examples of calls that require recording:</p><ul class="cc-list-items"><li>Introductory calls where you educate a prospect about Medicare Advantage or Part D options</li><li>Follow-up calls when a beneficiary is making an enrollment decision</li><li>Post-enrollment retention calls aimed at keeping a client enrolled</li><li>Any call where plan benefits, costs, or options are discussed</li></ul><div class="cc-note"><strong>Critical rule:</strong> You cannot complete an enrollment over the phone if your calls are not being recorded.</div></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div><h3>Which Calls Do Not Need to Be Recorded</h3></div>
+            <div class="cc-card"><p>Calls made solely to schedule an appointment, with no benefits discussion, do not require recording. In-person meetings do not require call recording — they require an SOA instead.</p><p>However, if any phone call shifts into a discussion of plan benefits, costs, or enrollment, recording becomes required from that point forward.</p><div class="cc-note"><strong>Practical standard:</strong> If there is any possibility a call will touch on plan details, record it from the start.</div></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg></div><h3>Retention Requirements</h3></div>
+            <div class="cc-card"><p>All recorded calls must currently be retained for <strong style="color:var(--ink);">10 years</strong>. Recordings must be accessible and retrievable on demand — if a complaint is filed and you cannot produce a specific recording quickly, it is treated the same as not having the recording at all.</p><div class="cc-note"><strong>Before AEP:</strong> Verify that your recording storage system is organized, backed up, and searchable enough to locate a specific call when needed.</div></div>
+          </div>
+          <div class="cc-update"><span class="cc-update-tag">CY2027 Update</span><h4>Retention Reduced to 6 Years — Effective October 1, 2026</h4><p>The 10-year retention requirement is being reduced. Starting October 1, 2026 for 2027 plan enrollments:</p><ul><li>Years 1–3: retain the audio recording</li><li>Years 4–6: retain either the audio recording or a written transcript</li><li>After year 6: no retention is required</li></ul><p>Do not delete any existing recordings retroactively without legal review. Update your data retention policy before October 1, 2026.</p></div>
+        `
+      },
+      {
+        week:'Week 3', title:'Communication vs. Marketing Materials', desc:'How CMS distinguishes communication from marketing, what triggers the approval process, and baseline requirements.',
+        body:`
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h3>What CMS Means by Communication Materials</h3></div>
+            <div class="cc-card"><p>Communication materials are educational and informational in nature. They provide general information about Medicare and coverage options without promoting a specific plan or attempting to influence enrollment decisions.</p><p>Examples of communication materials:</p><ul class="cc-list-items"><li>Explanations of Medicare Parts A, B, C, and D</li><li>General descriptions of how Medicare Advantage works vs. Original Medicare</li><li>Information about Medicare enrollment periods (IEP, AEP, OEP, SEP)</li><li>Descriptions of the services you provide as an agent</li><li>General comparisons of Medicare plan types without naming specific plans or carriers</li></ul><div class="cc-note"><strong>Note:</strong> Communication materials must be accurate and not misleading, but they do not require the full carrier and CMS marketing approval process.</div></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><h3>What Crosses the Line into Marketing</h3></div>
+            <div class="cc-card"><p>The moment a piece of content meets either of the following criteria, it is classified as marketing and requires CMS approval before use:</p><ol class="cc-ol"><li><span class="cc-ol-num">1</span><div><strong>Intent to influence enrollment</strong> — The material is designed to draw a beneficiary toward a specific plan or carrier.</div></li><li><span class="cc-ol-num">2</span><div><strong>Mentions plan benefits</strong> — The material references any specific benefit: dental, vision, hearing, transportation, meal benefits, OTC allowances, premium reductions, cost savings, or star ratings.</div></li></ol><div class="cc-note"><strong>Important:</strong> A piece does not need to name a specific plan to be classified as marketing. Generic benefit mentions trigger the requirement. The test is content and intent, not format.</div></div>
+          </div>
+          <div class="cc-section">
+            <div class="cc-sh"><div class="cc-sh-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><h3>Minimum CMS Requirements for All Materials</h3></div>
+            <div class="cc-card"><p>All materials — whether classified as communication or marketing — must meet CMS baseline requirements:</p><table class="cc-req-table"><thead><tr><th>Requirement</th><th>Detail</th></tr></thead><tbody><tr><td>No misleading content</td><td>Must not mislead or confuse beneficiaries with words, symbols, or imagery</td></tr><tr><td>No government endorsement</td><td>Must not imply government endorsement, approval, or affiliation</td></tr><tr><td>Agent contact information</td><td>Must include accurate and compliant agent contact information</td></tr><tr><td>Approved agent titles</td><td>Licensed Insurance Agent, Licensed Sales Agent, Licensed Sales Representative, Sales Agent, or Sales Representative</td></tr><tr><td>Required disclaimers</td><td>Must include required disclaimers where applicable</td></tr></tbody></table></div>
+          </div>
+        `
+      },
+    ]},
+  { id:'leadgen', nav:'Lead Gen', num:'Section 03', title:'Lead Generation',
+    lead:'Guides, templates, and training to build and work a lead pipeline heading into AEP.',
+    vids:[
+      {format:'Video', dur:'~48 min', title:'Hosting a CMS-Compliant Educational Event', desc:'How to plan and run an educational event that fills your pipeline without crossing compliance lines.'},
+      {format:'Video', dur:'~42 min', title:'Social Media Marketing for Medicare Agents', desc:'Organic and paid social strategies that work — compliant content, real results, platform-by-platform guidance.'},
+      {format:'Roundtable', dur:'~48 min', title:'Scaling from 100 → 500 Clients', desc:'Agents and advisors on scaling a Medicare book while maintaining service quality and client satisfaction.'},
+    ],
+    docs:[
+      {type:'Template', flag:'new', flagText:'New', title:'AEP Client Email Campaign — 4-Email Series', desc:'Ready-to-send plan review outreach with compliant copy, customizable subject lines, and timing guidance.', cta:'Access'},
+      {type:'Template', flag:'new', flagText:'New', title:'AEP Social Post Series — 8 Posts', desc:'Compliant Facebook and LinkedIn posts covering AEP open dates, reminders, and enrollment deadlines.', cta:'Access'},
+      {type:'PDF', title:'Pre-Approved Outreach Scripts', desc:'CMS-compliant scripts for calling leads, following up, and confirming appointments through AEP.', cta:'Download'},
+      {type:'Playbook', title:'Community Partnerships Playbook', desc:'How to build referral relationships with senior centers, pharmacies, and community organizations.', cta:'Download'},
+    ]},
+  { id:'enrollment', nav:'Enrollment', num:'Section 04', title:'Enrollment',
+    lead:'Tools and training to help you compare plans, identify the right products, and enroll clients efficiently and compliantly.',
+    docs:[
+      {type:'Tool', title:'Plan Cheatsheets', desc:'Compare MA, MAPD, and PDP plans by state and county — premiums, MOOPs, dental, vision, and Rx formulary.', cta:'Open'},
+      {type:'One-pager', title:'C-SNP Plans in 2027', desc:'Qualifying conditions, year-round SEP, enrollment verification, and finding C-SNP opportunities.', cta:'Download'},
+      {type:'Guide', flag:'new', flagText:'New', title:'Running Virtual Enrollments', desc:'Compliant, efficient virtual Medicare enrollments — tools, workflow, and best practices for remote sales.', cta:'Access'},
+    ],
+    vids:[
+      {format:'Video', dur:'~38 min', title:'Understanding Extra Help / LIS', desc:'How Low Income Subsidy works, who qualifies, and how to serve LIS clients during AEP.'},
+      {format:'Video', dur:'~44 min', title:'Understanding C-SNPs', desc:'Everything agents need to identify, pitch, and enroll clients in Chronic Special Needs Plans year-round.'},
+      {format:'Video', dur:'~46 min', title:'Understanding Dual Eligible Plans (D-SNP)', desc:'How D-SNPs work, who qualifies, and how to identify and serve dual-eligible clients.'},
+    ]},
+  { id:'crosssell', nav:'Cross-Sell', num:'Section 05', title:'Cross-Sell',
+    lead:'Introduce ancillary products naturally and serve clients beyond their Medicare plan.',
+    docs:[
+      {type:'PDF', title:'Cross-Sell Conversation Starters', desc:'Scripted openers for introducing ancillary products naturally into Medicare plan review conversations.', cta:'Download'},
+    ],
+    vids:[
+      {format:'Roundtable', dur:'~55 min', title:'Serving Clients Beyond Medicare', desc:'Jesse Hendon, Veronica Neal, Brent Crawley, and Michael Henderson on ancillary strategies and cross-sell.'},
+      {format:'Video', dur:'~38 min', title:'Selling Hospital Indemnity', desc:'How to identify ideal candidates, present the value, and close hospital indemnity alongside MA plans.'},
+      {format:'Video', dur:'~44 min', title:'Critical Illness & CHAS Ancillaries', desc:'How to present and sell critical illness and CHAS ancillary products alongside Medicare plans.'},
+    ]},
+  { id:'retention', nav:'Retention', num:'Section 06', title:'Client Retention',
+    lead:'Keep the clients you enroll — scripts and plans for the post-AEP window that reduce disenrollment.',
+    docs:[
+      {type:'PDF', title:'30–60 Day Retention Call Scripts', desc:'Proven scripts for the critical 30–60 day post-enrollment window — catch issues early and keep clients.', cta:'Download'},
+      {type:'Guide', title:'30-60 Plan: Post-AEP Client Nurture', desc:'What to do in the 30 and 60 days after enrollment to reduce disenrollment and build referral momentum into Q1.', cta:'Download'},
+      {type:'Script', flag:'new', flagText:'New', title:'Annual Plan Review Call Script', desc:'Word-for-word script for proactive plan review calls with existing clients — handles objections, surfaces cross-sells.', cta:'Access'},
+    ]},
+  { id:'huddle', nav:'Huddle Series', num:'Section 07', title:'Community Huddle Series',
+    lead:'A live weekly series for independent agents — fundamentals, lead gen, compliance, and retention through AEP.',
+    events:[
+      {n:'01', title:'Medicare Fundamentals — What Agents Need to Know for 2027', when:'Tuesday, July 14 · 2:30pm ET · Goldcast', status:'Open', cta:'Register →'},
+      {n:'02', title:'Lead Generation Strategies for AEP Season', when:'Tuesday, July 21 · 2:30pm ET · Goldcast', status:'Open', cta:'Register →'},
+      {n:'03', title:'Grassroots Marketing That Actually Works', when:'Tuesday, July 28 · 2:30pm ET · Goldcast', status:'Upcoming', cta:'Notify Me'},
+      {n:'04', title:'Client Retention and Reducing Disenrollment', when:'Tuesday, August 4 · 2:30pm ET · Goldcast', status:'Upcoming', cta:'Notify Me'},
+      {n:'05', title:'Running AEP Events That Drive Enrollments', when:'Tuesday, August 11 · 2:30pm ET · Goldcast', status:'Upcoming', cta:'Notify Me'},
+      {n:'06', title:'Social Media Marketing for Medicare Agents', when:'Tuesday, August 18 · 2:30pm ET · Goldcast', status:'Upcoming', cta:'Notify Me'},
+      {n:'07', title:"CMS Compliance for AEP — What Changed, What Didn't", when:'Tuesday, August 25 · 2:30pm ET · Goldcast', status:'Upcoming', cta:'Notify Me'},
+    ]},
+  { id:'spark', nav:'Spark Agents', num:'Section 08', title:'For Spark Advisors agents',
+    lead:'Tools, features, and AEP resources exclusive to agents on the Spark platform — built to help you capture leads, enroll faster, and retain clients.',
+    vids:[
+      {format:'Video', dur:'~30 min', title:'How Spark Helps Agents Win AEP', desc:'A walkthrough of every Spark tool built for AEP season — Sources, Plan Cheatsheets, AI Assistant, Provider Search, and more.', flag:'new', flagText:'New'},
+    ],
+    docs:[
+      {type:'Guide', title:'Sources & Plan Cheatsheets', desc:'Capture PTC, needs assessment, and SOA in one flow. Instant plan comparison charts filtered by county, state, and plan type.', cta:'Access'},
+      {type:'Guide', title:'Pre-Approved Marketing Materials', desc:'Event flyers, social images, and Medicare 101 decks — customizable with your contact info, ready to use with no carrier approval delay.', cta:'Access'},
+      {type:'Tool', title:'Provider Search', desc:'Instantly see which MA plans cover a beneficiary\'s current doctors by name — built into the Spark platform.', cta:'Access'},
+      {type:'Tool', title:'AI Assistant & Plan Disruption Analysis', desc:'Auto-verify active policies, flag clients hit by plan disruptions, and trigger T65 outreach automatically. Run on October 1 to protect your book.', cta:'Access'},
+      {type:'Guide', title:'Client Services', desc:'Hard off-routine support to Spark\'s healthcare experts. 90%+ of requests answered within 24 hours, 96% average CSAT.', cta:'Learn More'},
+      {type:'Guide', title:'Ancillary & MedSupp Lineup', desc:'UHOne, Heartland, GTL, Physicians Mutual, NCD and more. SunFire enrollments sync with Spark contact records — one complete view.', cta:'Learn More'},
+    ],
+    news:[
+      {fmt:'Event', flag:'new', flagText:'Aug 25–26', title:'Spark Pre-AEP Kickoff — August 25–26', desc:'Platform training, sales coaching, automations setup, and AEP goal-setting alongside IMN Ignite. Exclusive for Spark agents.', cta:'Register →'},
+    ]},
+];
+
+const CHEV='<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>';
+const PLAY='<svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>';
+const ARR='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const kw=s=>s.toLowerCase();
+
+/* ---- Event Banner (IMN Ignite + Spark Pre-AEP) ---- */
+function eventBannerHTML(){
+  return `<div class="event-banner" style="grid-template-columns:1fr">
+    <div class="ev-card ev-card-imn">
+      <div class="ev-eyebrow">IMN Community Event</div>
+      <div class="ev-title">IMN Ignite 2026</div>
+      <div class="ev-meta">
+        <span class="ev-pill imn-pill">August 25–26</span>
+        <span class="ev-pill">Virtual · Free</span>
+        <span class="ev-pill">2 Days</span>
+        <span class="ev-pill">Open to All Agents</span>
+      </div>
+      <div class="ev-desc">IMN's half-day virtual pre-AEP event — carrier panels, agency leader sessions, AEP strategy workshops, and community connection. Open to all independent Medicare agents.</div>
+      <a href="#" class="ev-cta">Register Now →</a>
+    </div>
+  </div>`;
+}
+
+/* ---- News Link Rows ---- */
+function newsLinksHTML(items){
+  const rows = items.map(n=>`<a href="${n.link||'#'}" class="nl-row" target="_blank">
+    <div class="nl-fmt">${n.fmt}</div>
+    <div class="nl-content"><div class="nl-title">${n.title}</div><div class="nl-desc">${n.desc}</div></div>
+    <div class="nl-cta">${n.cta}</div>
+  </a>`).join('');
+  return `<div class="news-link-list">${rows}</div>`;
+}
+
+/* ---- Huddle Series Preview (next 4 sessions) ---- */
+function huddlePreviewHTML(){
+  const sessions = [
+    {n:'01', title:'Medicare Fundamentals', when:'July 14 · 2:30 PM ET', status:'open'},
+    {n:'02', title:'Agency Principal Spotlight', when:'July 21 · 2:30 PM ET', status:'open'},
+    {n:'03', title:'Agency Principal Spotlight', when:'July 28 · 2:30 PM ET', status:'open'},
+    {n:'04', title:'Agency Principal Spotlight', when:'Aug 4 · 2:30 PM ET', status:'open'},
+  ];
+  const rows = sessions.map(s=>`<div class="hp-row">
+    <div class="hp-num">${s.n}</div>
+    <div class="hp-info"><div class="hp-session">${s.title}</div><div class="hp-when">${s.when} · Goldcast</div></div>
+    <span class="hp-status ${s.status==='open'?'hp-open':'hp-soon'}">${s.status==='open'?'Register':'Coming Soon'}</span>
+  </div>`).join('');
+  return `<div class="huddle-preview">
+    <div class="hp-head">
+      <div><div class="hp-title">IMN Community Huddle Series — 13 weekly sessions, Jul 14–Oct 13</div><div class="hp-sub">Every Tuesday at 2:30 PM ET on Goldcast · Free for all IMN members</div></div>
+      <a href="#" class="hp-cta">View Full Schedule →</a>
+    </div>
+    <div class="hp-rows">${rows}</div>
+  </div>`;
+}
+
+/* ---- Spark for Agents Block ---- */
+function sparkBlockHTML(){
+  const STAR='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>';
+  const feats = [
+    {icon:'<path d="M4 16l4.6-4.6 4 4L20 8"/><path d="M14 3h7v7"/>',title:'Sources & Plan Cheatsheets',desc:'Capture PTC, needs assessment, and SOA in one flow. Instant plan comparison charts by county.'},
+    {icon:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',title:'Pre-Approved Marketing Materials',desc:'Event flyers, social images, Medicare 101 decks — customizable, no carrier approval delay.'},
+    {icon:'<circle cx="11" cy="11" r="7"/><path d="m21 21-3.5-3.5"/>',title:'Provider Search',desc:'Instantly see which MA plans cover a beneficiary\'s current doctors by name.'},
+    {icon:'<path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>',title:'AI Assistant',desc:'Auto-verify active policies, flag plan disruptions, and trigger T65 outreach automatically.'},
+    {icon:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',title:'Client Services',desc:'Off-routine support handled by Spark healthcare experts. 90%+ answered in 24 hours.'},
+    {icon:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',title:'Ancillary & MedSupp Lineup',desc:'UHOne, Heartland, GTL, Physicians Mutual, NCD and more — synced to Spark contact records.'},
+  ];
+  const featHTML = feats.map(f=>`<div class="sb-feat">
+    <div class="sb-feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${f.icon}</svg></div>
+    <div class="sb-feat-title">${f.title}</div>
+    <div class="sb-feat-desc">${f.desc}</div>
+  </div>`).join('');
+  return `<div class="spark-block">
+    <div class="sb-head">
+      <div class="sb-star">${STAR}</div>
+      <div><div class="sb-title">For Spark Advisors agents</div><div class="sb-sub">Tools and features exclusive to agents on the Spark platform</div></div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-grid">${featHTML}</div>
+      <div class="sb-kickoff">
+        <div class="sk-icon"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>
+        <div class="sk-text">
+          <div class="sk-title">Spark Pre-AEP Kickoff — August 25–26</div>
+          <div class="sk-desc">Platform training, sales coaching, automations setup, and AEP goal-setting alongside IMN Ignite. Exclusive for Spark agents.</div>
+        </div>
+        <a href="#" class="sk-cta">Register →</a>
+      </div>
+    </div>
+  </div>`;
+}
+/* ---- Key Contracting Deadlines ---- */
+function deadlinesHTML(){
+  return `<div class="deadline-section">
+    <div class="deadline-section-head">Key contracting deadlines — AEP 2027</div>
+    <div class="deadline-grid">
+      <div class="deadline-month">
+        <div class="dm-head"><span class="month-name">June</span><span class="month-year">2026</span></div>
+        <div class="dm-body">
+          <div class="deadline-row"><div class="dl-date">17</div><div class="dl-right"><div class="dl-label">HealthSpring transfers</div><div class="dl-note">Without release</div></div></div>
+          <div class="deadline-row"><div class="dl-date">22</div><div class="dl-right"><div class="dl-label">AHM 2027 exams open</div><span class="dl-badge key">Key Date</span></div></div>
+          <div class="deadline-row"><div class="dl-date">30</div><div class="dl-right"><div class="dl-label">Anthem transfers</div><div class="dl-note">Without release</div></div></div>
+        </div>
+      </div>
+      <div class="deadline-month">
+        <div class="dm-head"><span class="month-name">July</span><span class="month-year">2026</span></div>
+        <div class="dm-body">
+          <div class="deadline-row"><div class="dl-date">3</div><div class="dl-right"><div class="dl-label">Aetna transfers</div><div class="dl-note">Without release</div></div></div>
+          <div class="deadline-row"><div class="dl-date">15</div><div class="dl-right"><div class="dl-label">Humana transfers</div><div class="dl-note">Without release</div></div></div>
+        </div>
+      </div>
+      <div class="deadline-month">
+        <div class="dm-head"><span class="month-name">August</span><span class="month-year">2026</span></div>
+        <div class="dm-body">
+          <div class="deadline-row"><div class="dl-date">25</div><div class="dl-right"><div class="dl-label">IMN Ignite — Half-day virtual</div><span class="dl-badge key">IMN Event</span></div></div>
+          <div class="deadline-row"><div class="dl-date">31</div><div class="dl-right"><div class="dl-label">Wellcare transfers</div><div class="dl-note">Without release</div></div></div>
+          <div class="deadline-row"><div class="dl-date">31</div><div class="dl-right"><div class="dl-label">Humana transfers</div><div class="dl-note">With release</div></div></div>
+        </div>
+      </div>
+      <div class="deadline-month">
+        <div class="dm-head"><span class="month-name">September</span><span class="month-year">2026</span></div>
+        <div class="dm-body">
+          <div class="deadline-row"><div class="dl-date">1</div><div class="dl-right"><div class="dl-label">HealthSpring transfers</div><div class="dl-note">With release</div></div></div>
+          <div class="deadline-row"><div class="dl-date">15</div><div class="dl-right"><div class="dl-label">Scan transfers</div><div class="dl-note">With release</div></div></div>
+          <div class="deadline-row"><div class="dl-date">30</div><div class="dl-right"><div class="dl-label">Aetna transfers</div><div class="dl-note">With release</div></div></div>
+          <div class="deadline-row"><div class="dl-date">30</div><div class="dl-right"><div class="dl-label">Anthem transfers</div><div class="dl-note">With release</div></div></div>
+        </div>
+      </div>
+      <div class="deadline-month">
+        <div class="dm-head"><span class="month-name">October</span><span class="month-year">2026</span></div>
+        <div class="dm-body">
+          <div class="deadline-row"><div class="dl-date">1</div><div class="dl-right"><div class="dl-label">2027 plan release</div><span class="dl-badge key">CY2027 rules live</span></div></div>
+          <div class="deadline-row"><div class="dl-date">15</div><div class="dl-right"><div class="dl-label">AEP begins</div><span class="dl-badge key">AEP Opens</span></div></div>
+        </div>
+      </div>
+      <div class="deadline-month">
+        <div class="dm-head"><span class="month-name">December</span><span class="month-year">2026</span></div>
+        <div class="dm-body">
+          <div class="deadline-row"><div class="dl-date">7</div><div class="dl-right"><div class="dl-label">AEP closes</div><span class="dl-badge key">AEP Ends</span></div></div>
+          <div class="deadline-row"><div class="dl-date">31</div><div class="dl-right"><div class="dl-label">OEP begins January 1</div><div class="dl-note">Post-AEP retention window</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---- Spark Exclusive Section ---- */
+function sparkSectionHTML(){
+  const STAR_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>';
+  return `<div class="spark-section">
+    <div class="spark-sec-head">
+      <div class="spark-star-box">${STAR_SVG}</div>
+      <div>
+        <div class="spark-sec-title">Spark Advisors — for Spark agents</div>
+        <div class="spark-sec-sub">Tools, features, and support exclusive to agents on the Spark platform. These resources help you capture leads, enroll faster, and retain clients year-round.</div>
+      </div>
+    </div>
+    <div class="spark-sec-body">
+      <div class="spark-feature-grid">
+        <div class="spark-feat">
+          <div class="sf-icon"><svg viewBox="0 0 24 24"><path d="M4 16l4.6-4.6 4 4L20 8"/><path d="M14 3h7v7"/></svg></div>
+          <div class="sf-title">Sources &amp; Plan Cheatsheets</div>
+          <div class="sf-desc">Generate QR codes and links that capture Permission to Contact, needs assessment, and SOA in one flow. Instant plan comparison charts filtered by county, state, and plan type.</div>
+        </div>
+        <div class="spark-feat">
+          <div class="sf-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg></div>
+          <div class="sf-title">Marketing Materials</div>
+          <div class="sf-desc">Pre-approved event flyers, social images, and Medicare 101 decks — customizable with your contact info, ready to use immediately with no carrier approval delay.</div>
+        </div>
+        <div class="spark-feat">
+          <div class="sf-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.5-3.5"/></svg></div>
+          <div class="sf-title">Provider Search</div>
+          <div class="sf-desc">Instantly see which insurance plans a provider accepts. Spark's provider search gives insight into which MA plans include a client's current doctors.</div>
+        </div>
+        <div class="spark-feat">
+          <div class="sf-icon"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+          <div class="sf-title">AI Assistant</div>
+          <div class="sf-desc">Auto-verify active policies and see who needs attention: clients hit by plan disruptions, T65 leads. Opt in to automated outreach for clients whose plans are exiting.</div>
+        </div>
+        <div class="spark-feat">
+          <div class="sf-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="sf-title">Client Services</div>
+          <div class="sf-desc">Hard off-routine support questions to Spark's healthcare experts. 90%+ of requests answered within 24 hours, 96% average CSAT — so you stay focused on enrollment conversations.</div>
+        </div>
+        <div class="spark-feat">
+          <div class="sf-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          <div class="sf-title">Ancillary &amp; MedSupp Lineup</div>
+          <div class="sf-desc">Full ancillary and MedSupp lineup including UHOne, Heartland, GTL, Physicians Mutual, NCD and more. SunFire enrollments sync with Spark contact records — one complete view.</div>
+        </div>
+      </div>
+      <div class="spark-ntk">
+        <div class="ntk-title">Spark agents need to know — AEP 2027</div>
+        <div class="ntk-items">
+          <div class="ntk-item"><div class="ntk-dot"></div><div class="ntk-text"><strong>Enrollment quality matters:</strong> Carriers are watching accretion rate (&gt;80%), rapid disenrollment (&lt;10%), and quality enrollments (3+ months). Spark reports help you track all three.</div></div>
+          <div class="ntk-item"><div class="ntk-dot"></div><div class="ntk-text"><strong>Plan Disruption Analysis:</strong> Run this on October 1 to identify clients whose plans are exiting or changing significantly — prioritize outreach and protect your book.</div></div>
+          <div class="ntk-item"><div class="ntk-dot"></div><div class="ntk-text"><strong>Cross-sell earns 2.5× revenue:</strong> Spark agents with 250 MA enrollments, 2 final expense policies/week, and ¼ book on home health earn up to $721K — vs $302K on MA alone.</div></div>
+          <div class="ntk-item"><div class="ntk-dot"></div><div class="ntk-text"><strong>Automation handles ANOC &amp; plan-exit outreach:</strong> Claude and GoHighLevel help send 30/60/90-day check-in messages in January when plans start. Confirm they're getting to doctors and filling prescriptions.</div></div>
+        </div>
+      </div>
+      <div class="spark-cta-row">
+        <a href="#" class="spark-btn spark-btn-primary">Join Spark Advisors →</a>
+        <a href="#" class="spark-btn spark-btn-ghost">Watch: How Spark Helps Agents Win AEP</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---- Top Producer Plays Banner ---- */
+function tppBannerHTML(){
+  return `<div class="tpp-banner">
+    <div class="tpp-vert">Top Producer Plays</div>
+    <div class="tpp-body">
+      <div class="tpp-title">Four topics keep coming up in agent conversations this year</div>
+      <div class="tpp-desc">IMN Community Advisors share how top producers are putting each one to work to grow their book this AEP.</div>
+      <div class="tpp-topics">
+        <span class="tpp-topic">AI &amp; Automation</span>
+        <span class="tpp-topic">Ancillaries</span>
+        <span class="tpp-topic">Virtual Enrollments</span>
+        <span class="tpp-topic">New Lead Channels</span>
+      </div>
+    </div>
+    <div class="tpp-action">
+      <a href="#" class="tpp-btn">Read in the Guide →</a>
+    </div>
+  </div>`;
+}
+
+/* status flag only (New / Updated) — no more type/format pill inside cards */
+const flagPill=item=>{
+  if(item.flag) return `<span class="pill ${item.flag}">${item.flagText||'New'}</span>`;
+  if(item.flagText && item.flagText!=='Existing') return `<span class="pill upd">${item.flagText}</span>`;
+  return '';
+};
+/* type as plain-text eyebrow (no box), New/Updated flag inline beside it */
+const typeEyebrow=(label,item)=>{
+  const f=flagPill(item);
+  return `<div class="type-row"><span class="type-label">${label}</span>${f}</div>`;
+};
+const docCard=d=>`<a class="doc" href="#" data-text="${kw(d.title+' '+d.desc+' '+d.type)}">
+  ${typeEyebrow(d.type,d)}<h3>${d.title}</h3><p>${d.desc}</p>
+  <span class="go">${d.cta||'Open'} ${ARR}</span></a>`;
+const vidCard=v=>`<a class="vid" href="#" data-text="${kw(v.title+' '+v.desc+' '+v.format)}">
+  <div class="thumb"><span class="play">${PLAY}</span><span class="dur">${v.dur}</span></div>
+  <div class="vid-body">${typeEyebrow(v.format,v)}<h3>${v.title}</h3><p>${v.desc}</p></div></a>`;
+const newsRow=n=>`<div class="news-row" data-text="${kw(n.title+' '+n.desc+' '+n.fmt)}">
+  <div class="nfmt">${n.fmt}</div>
+  <div class="ncontent"><div class="ntitle">${n.title}</div><div class="ndesc">${n.desc}</div></div>
+  <div class="nright">${flagPill(n)}<span class="nbtn">${n.cta}</span></div>
+</div>`;
+const eventRow=e=>`<div class="ev" data-text="${kw(e.title+' '+e.when)}">
+  <div class="enum">${e.n}</div>
+  <div class="ebody"><div class="etitle">${e.title}</div><div class="ewhen">${e.when}</div></div>
+  <div class="eright"><span class="pill ${e.status==='Open'?'new':'upd'}">${e.status}</span><span class="ebtn">${e.cta}</span></div>
+</div>`;
+
+const CHEV_SM='<svg class="cc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>';
+const ccPanel=p=>{
+  const f=p.flag?`<span class="pill ${p.flag}">${p.flagText||'New'}</span>`:
+            (p.flagText&&p.flagText!=='Existing')?`<span class="pill upd">${p.flagText}</span>`:'';
+  return `<div class="cc-panel" data-text="${kw(p.week+' '+p.title+' '+p.desc)}">
+    <button class="cc-panel-head" onclick="this.closest('.cc-panel').classList.toggle('open')">
+      <span class="cc-week-badge">${p.week}</span>
+      <span class="cc-panel-title">${p.title}</span>
+      <span class="cc-panel-meta">${f}<span class="cc-panel-desc">${p.desc}</span>${CHEV_SM}</span>
+    </button>
+    <div class="cc-panel-body">${p.body}</div>
+  </div>`;
+};
+
+const main=document.getElementById('main');
+const tabs=document.getElementById('tabs');
+const TAB_ARROW='<span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
+
+SECTIONS.forEach((sec,i)=>{
+  const count=(sec.docs?.length||0)+(sec.vids?.length||0)+(sec.news?.length||0)+(sec.events?.length||0)+(sec.ccPanels?.length||0)+(sec.checklists?.length||0)+(sec.tools?.length||0)+(sec.newsLinks?.length||0);
+  const navLabel=sec.nav||sec.title.replace(' — start here','');
+  tabs.insertAdjacentHTML('beforeend',
+    `<button class="tab" data-go="${sec.id}"><span class="tab-label">${navLabel}</span>${TAB_ARROW}</button>`);
+
+  let body='';
+  if(sec.eventBanner){ body+=`<div class="subhead">Upcoming events — save the date</div>${eventBannerHTML()}`; }
+  if(sec.deadlines){ body+=`<div class="subhead">Key contracting deadlines</div>${deadlinesHTML()}`; }
+  if(sec.checklists){ body+=`<div class="subhead">AEP checklist & guide</div><div class="grid">${sec.checklists.map(docCard).join('')}</div>`; }
+  if(sec.newsLinks){ body+=`<div class="subhead">Industry news & community</div>${newsLinksHTML(sec.newsLinks)}`; }
+  if(sec.huddlePreview){ body+=`<div class="subhead">IMN Community Huddle Series</div>${huddlePreviewHTML()}`; }
+  if(sec.vids){ body+=`<div class="subhead">On-demand training</div><div class="grid">${sec.vids.map(vidCard).join('')}</div>`; }
+  if(sec.docs){ body+=`<div class="subhead">Guides & templates</div><div class="grid">${sec.docs.map(docCard).join('')}</div>`; }
+  if(sec.tools){ body+=`<div class="subhead">Tools</div><div class="grid">${sec.tools.map(docCard).join('')}</div>`; }
+  if(sec.news){ body+=`<div class="subhead">Industry news & rule changes</div><div class="news-list">${sec.news.map(newsRow).join('')}</div>`; }
+  if(sec.ccPanels){ body+=`<div class="subhead">Compliance Corner — weekly guides</div><div class="cc-list">${sec.ccPanels.map(ccPanel).join('')}</div>`; }
+  if(sec.sparkBlock){ body+=sparkBlockHTML(); }
+  if(sec.events){ body+=`<div class="schedule">${sec.events.map(eventRow).join('')}</div>`; }
+
+  main.insertAdjacentHTML('beforeend',
+    `<section class="section${i===0?' open':''}" id="${sec.id}">
+       <button class="sec-head">
+         <div><h2>${sec.title}</h2><p class="lead">${sec.lead}</p></div>
+         <div class="meta"><span class="sec-count">${count} resources</span>${CHEV}</div>
+       </button>
+       <div class="sec-body">${body}</div>
+     </section>`);
+});
+
+/* accordion toggle */
+document.querySelectorAll('.sec-head').forEach(h=>{
+  h.addEventListener('click',()=>h.closest('.section').classList.toggle('open'));
+});
+
+/* keep the sticky stage bar flush under the (variable-height) top bar — kills the scroll gap */
+const topbarEl=document.querySelector('.topbar'), stagebarEl=document.querySelector('.stagebar');
+function syncChrome(){ document.documentElement.style.setProperty('--topbar-h', topbarEl.offsetHeight+'px'); }
+syncChrome(); window.addEventListener('resize',syncChrome); window.addEventListener('load',syncChrome);
+
+/* stage tabs — click + scroll-spy; active chip fills (Spark arrow-chip style) */
+const tabEls=[...tabs.querySelectorAll('.tab')];
+const stickyH=()=>topbarEl.offsetHeight + stagebarEl.offsetHeight;
+let suppressSpy=false;
+function setActive(id){
+  let active=null;
+  tabEls.forEach(t=>{const on=t.dataset.go===id;t.classList.toggle('active',on);if(on)active=t;});
+  if(active){ // horizontal-only nudge so the active chip stays visible on overflow — never scroll the page
+    const r=active.getBoundingClientRect(), pr=tabs.getBoundingClientRect();
+    if(r.left<pr.left) tabs.scrollLeft-=(pr.left-r.left)+16;
+    else if(r.right>pr.right) tabs.scrollLeft+=(r.right-pr.right)+16;
+  }
+}
+tabEls.forEach(t=>{
+  t.addEventListener('click',()=>{
+    const s=document.getElementById(t.dataset.go);
+    s.classList.add('open');           // expand first
+    setActive(t.dataset.go);           // mark active (no page scroll)
+    suppressSpy=true;                  // don't let scroll-spy override during the animated scroll
+    requestAnimationFrame(()=>{        // measure AFTER reflow from expanding
+      const y=s.getBoundingClientRect().top+window.scrollY-stickyH()-12;
+      window.scrollTo({top:y,behavior:'smooth'});
+      setTimeout(()=>{suppressSpy=false;},600);
+    });
+  });
+});
+/* scroll-spy — active = the last section whose top has crossed a line just under the nav.
+   Computed in a single rAF-throttled pass; at the absolute page bottom we pin the last
+   section (it can't scroll past the line). Kept deliberately simple — the previous
+   geometry-probing version flickered while sections were still auto-expanding. */
+let spyTick=false;
+function spy(){
+  if(suppressSpy)return;
+  const line=stickyH()+24;
+  const maxScroll=document.body.scrollHeight-window.innerHeight;
+  let cur=0;
+  for(let i=0;i<SECTIONS.length;i++){
+    if(document.getElementById(SECTIONS[i].id).getBoundingClientRect().top<=line) cur=i;
+  }
+  if(window.scrollY>=maxScroll-2) cur=SECTIONS.length-1;   // pin last section at the very bottom
+  setActive(SECTIONS[cur].id);
+}
+window.addEventListener('scroll',()=>{ if(spyTick)return; spyTick=true; requestAnimationFrame(()=>{spy();spyTick=false;}); });
+window.addEventListener('resize',()=>{ syncChrome(); spy(); });
+
+/* progressive reveal — as each section scrolls into view, auto-open it (infinite-scroll feel).
+   Trigger band sits in the UPPER part of the viewport (just below the sticky nav) so it's
+   reachable for EVERY section, including the last ones where there isn't a full screen of
+   page left to scroll. Content expands below the fold, so no jump. We only auto-open. */
+function openSection(sec){
+  if(sec && !sec.classList.contains('open') && !sec.dataset.userClosed){
+    sec.classList.add('open');
+    // a section just changed height — re-evaluate the active nav AFTER the reflow settles,
+    // so the highlight reads stable geometry instead of flickering mid-expand.
+    requestAnimationFrame(()=>requestAnimationFrame(spy));
+  }
+}
+let lastY=window.scrollY;
+const autoOpen=new IntersectionObserver((entries)=>{
+  const goingDown=window.scrollY>=lastY; lastY=window.scrollY;
+  entries.forEach(e=>{ if(e.isIntersecting && goingDown) openSection(e.target.closest('.section')); });
+},{ rootMargin: `-12% 0px -55% 0px` });   // band ~12%–45% down the viewport — high enough for tail sections
+document.querySelectorAll('.section .sec-head').forEach(h=>autoOpen.observe(h));
+
+/* safety net for the final sections: when the page nears the bottom, the last sections may
+   never scroll high enough to hit the band — open any that are at least partly in view. */
+function revealTail(){
+  if(window.innerHeight+window.scrollY < document.body.scrollHeight-4) return; // only at the very bottom
+  SECTIONS.forEach(s=>{
+    const sec=document.getElementById(s.id);
+    if(sec.getBoundingClientRect().top < window.innerHeight) openSection(sec);
+  });
+}
+window.addEventListener('scroll',revealTail,{passive:true});
+
+/* if the user deliberately collapses a section, remember it so we don't re-open on scroll */
+document.querySelectorAll('.sec-head').forEach(h=>{
+  h.addEventListener('click',()=>{
+    const sec=h.closest('.section');
+    if(sec.classList.contains('open')) delete sec.dataset.userClosed;
+    else sec.dataset.userClosed='1';
+  });
+});
+spy();
+
+/* Browse Resources → scroll to first section */
+document.getElementById('browseBtn').addEventListener('click',()=>{
+  const s=document.getElementById(SECTIONS[0].id); s.classList.add('open');
+  window.scrollTo({top:s.getBoundingClientRect().top+window.scrollY-stickyH()-8,behavior:'smooth'});
+});
+
+/* live search across every item (cards, news rows, events) */
+const q=document.getElementById('q'), empty=document.getElementById('empty');
+q.addEventListener('input',()=>{
+  const term=q.value.trim().toLowerCase(); let anyVisible=false;
+  document.querySelectorAll('.section').forEach(sec=>{
+    let has=false;
+    sec.querySelectorAll('[data-text]').forEach(item=>{
+      const m=!term||item.dataset.text.includes(term);
+      item.style.display=m?'':'none'; if(m)has=true;
+    });
+    sec.classList.toggle('no-match',term&&!has);
+    if(has)anyVisible=true;
+    if(term&&has)sec.classList.add('open');
+  });
+  empty.style.display=(term&&!anyVisible)?'block':'none';
+});
+
+/* countdown to Oct 15 */
+(function(){
+  const now=new Date();
+  let target=new Date(now.getFullYear(),9,15,0,0,0);
+  if(target<now) target=new Date(now.getFullYear()+1,9,15,0,0,0);
+  const p=n=>String(n).padStart(2,'0');
+  function tick(){
+    const diff=target-new Date();
+    document.getElementById('d').textContent=Math.floor(diff/864e5);
+    document.getElementById('h').textContent=p(Math.floor(diff%864e5/36e5));
+    document.getElementById('m').textContent=p(Math.floor(diff%36e5/6e4));
+    document.getElementById('s').textContent=p(Math.floor(diff%6e4/1e3));
+  }
+  tick(); setInterval(tick,1000);
+})();
+</script>
+</body>
+</html>
